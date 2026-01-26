@@ -134,6 +134,4 @@ python manage.py runserver
 ## Author
 **Harshal Ahire**  
 
-Full Stack Developer Intern
-
 ---
