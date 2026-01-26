@@ -1,0 +1,100 @@
+{%extends 'index.html'%} {%block content%} {% if message %}
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+  {{ message }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endif %}
+
+<div class="card shadow-sm">
+  <div class="card-header bg-success text-white">
+    <h4 class="mb-0">Add New Employee</h4>
+  </div>
+  <div class="card-body">
+    <form action="{% url 'add_employee' %}" method="post">
+      {%csrf_token%}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="first_name" class="form-label">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="first_name"
+            name="first_name"
+            value="{{first_name|default:''}}"
+            required
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="last_name" class="form-label">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="last_name"
+            name="last_name"
+            value="{{last_name|default:''}}"
+            required
+          />
+        </div>
+        <div class="col-12">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            value="{{email|default:''}}"
+            required
+          />
+        </div>
+        <div class="col-12">
+          <label for="phone" class="form-label">Phone</label>
+          <input
+            type="number"
+            class="form-control"
+            id="phone"
+            name="phone"
+            value="{{phone|default:''}}"
+            required
+          />
+        </div>
+        <div class="col-12">
+          <label for="address" class="form-label">Address</label>
+          <input
+            type="text"
+            class="form-control"
+            id="address"
+            name="address"
+            value="{{address|default:''}}"
+            required
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="department" class="form-label">Department</label>
+          <select id="department" class="form-select" name="department">
+            <option>HR</option>
+            <option>Software</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="role" class="form-label">Role</label>
+          <select id="role" class="form-select" name="role">
+            <option>Interviewer</option>
+            <option>Software Tester</option>
+            <option>Software Developer</option>
+          </select>
+        </div>
+        <div class="col-12 mt-4">
+          <button type="submit" class="btn btn-success w-100">
+            Add Employee
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{%endblock%}
