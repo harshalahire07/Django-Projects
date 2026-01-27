@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h5 class="modal-title">Employee Details</h5>
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="modal"
+    aria-label="Close"
+  ></button>
+</div>
+<div class="modal-body">
+  <table class="table table-bordered">
+    <tr>
+      <th>First Name</th>
+      <td>{{ employee.first_name }}</td>
+    </tr>
+    <tr>
+      <th>Last Name</th>
+      <td>{{ employee.last_name }}</td>
+    </tr>
+    <tr>
+      <th>Email</th>
+      <td>{{ employee.email }}</td>
+    </tr>
+    <tr>
+      <th>Phone</th>
+      <td>{{ employee.phone }}</td>
+    </tr>
+    <tr>
+      <th>Address</th>
+      <td>{{ employee.address }}</td>
+    </tr>
+    <tr>
+      <th>Department</th>
+      <td>{{ employee.department }}</td>
+    </tr>
+    <tr>
+      <th>Role</th>
+      <td>{{ employee.role }}</td>
+    </tr>
+  </table>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+    Close
+  </button>
+</div>
