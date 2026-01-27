@@ -26,34 +26,6 @@ This project was developed as part of an internship onboarding task to gain hand
 
 ---
 
-## Project Structure
-```text
-Employee_Management_System_Django/
-├── employee_management/        # Project configuration
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── employee/                   # Application logic
-│   ├── models.py               # Database schema
-│   ├── views.py                # Business logic
-│   ├── urls.py                 # App routing
-│   ├── migrations/
-│   │   └── __init__.py
-│   └── templates/
-│       └── employee/
-│           ├── index.html
-│           ├── add_employee.html
-│           ├── update_employee.html
-│           ├── view_all_employees.html
-│           └── remove_employee.html
-│
-├── manage.py
-├── .gitignore
-└── README.md
-```
----
-
 ## Database Schema
 The application uses a relational data model consisting of:
 
