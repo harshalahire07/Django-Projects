@@ -1,6 +1,7 @@
 # Employee Management System (Django)
 
 ## Overview
+
 The Employee Management System is a web-based CRUD (Create, Read, Update, Delete) application developed using the Django framework.  
 The project is designed to manage employee records efficiently while following standard Django architecture and best practices.
 
@@ -9,6 +10,7 @@ This project was developed as part of an internship onboarding task to gain hand
 ---
 
 ## Key Features
+
 - Create, view, update, and delete employee records
 - Relational database design using Django ORM
 - Department and role management through foreign key relationships
@@ -19,6 +21,7 @@ This project was developed as part of an internship onboarding task to gain hand
 ---
 
 ## Technology Stack
+
 - **Backend:** Django (Python)
 - **Frontend:** HTML5, Bootstrap 5
 - **Database:** SQLite (Django default)
@@ -26,35 +29,8 @@ This project was developed as part of an internship onboarding task to gain hand
 
 ---
 
-## Project Structure
-```text
-Employee_Management_System_Django/
-├── employee_management/        # Project configuration
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-│
-├── employee/                   # Application logic
-│   ├── models.py               # Database schema
-│   ├── views.py                # Business logic
-│   ├── urls.py                 # App routing
-│   ├── migrations/
-│   │   └── __init__.py
-│   └── templates/
-│       └── employee/
-│           ├── index.html
-│           ├── add_employee.html
-│           ├── update_employee.html
-│           ├── view_all_employees.html
-│           └── remove_employee.html
-│
-├── manage.py
-├── .gitignore
-└── README.md
-```
----
-
 ## Database Schema
+
 The application uses a relational data model consisting of:
 
 - **Department**
@@ -77,6 +53,7 @@ This structure ensures data normalization and consistency using Django ORM relat
 ---
 
 ## Application Workflow
+
 1. Users interact with the UI to perform CRUD operations.
 2. Requests are routed through Django URL configurations.
 3. Views handle business logic and database interactions.
@@ -88,33 +65,41 @@ This structure ensures data normalization and consistency using Django ORM relat
 ## Setup Instructions
 
 ### Prerequisites
+
 - Python 3.10+
 - Git
 
 ### Installation Steps
 
 # Clone the repository
+
 git clone https://github.com/harshalahire07/Employee_Management_System_Django.git
 
 # Navigate to the project directory
+
 cd Employee_Management_System_Django
 
 # Create and activate virtual environment
+
 python -m venv venv
-venv\Scripts\activate   # Windows
+venv\Scripts\activate # Windows
 
 # Install dependencies
+
 pip install django
 
 # Apply migrations
+
 python manage.py migrate
 
 # Run the development server
+
 python manage.py runserver
 
 ---
 
 ## Development Notes
+
 - SQLite is used as the database for development simplicity and ease of setup.
 - The project follows Django’s recommended MVT (Model–View–Template) architecture.
 - AI tools were used selectively for debugging and validation assistance, while all core logic, structure, and implementation were completed manually to ensure strong conceptual understanding.
@@ -122,6 +107,7 @@ python manage.py runserver
 ---
 
 ## Future Enhancements
+
 - User authentication and role-based access control
 - Pagination and search functionality for employee records
 - Refactoring forms using Django ModelForms for improved validation
@@ -132,6 +118,7 @@ python manage.py runserver
 ---
 
 ## Author
-**Harshal Ahire**  
+
+**Harshal Ahire**
 
 ---
