@@ -6,4 +6,5 @@ urlpatterns = [
     
     path('api/employees/', api.EmployeeListApi, name='api_employee_list'),
     path('api/employees/<int:id>/', api.EmployeeDetailApi, name='api_employee_detail'),
+    path('api/login/', api.login_api, name='api_login'),
 ]

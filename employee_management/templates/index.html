@@ -11,24 +11,40 @@
   </head>
   <body class="bg-light">
     <script>
-    function getCSRFToken() {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
+      function getCSRFToken() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let cookie of cookies) {
             cookie = cookie.trim();
-            if (cookie.startsWith('csrftoken=')) {
-                cookieValue = cookie.substring('csrftoken='.length);
-                break;
+            if (cookie.startsWith("csrftoken=")) {
+              cookieValue = cookie.substring("csrftoken=".length);
+              break;
             }
+          }
         }
-    }
-    return cookieValue;
-}
-</script>
+        return cookieValue;
+      }
+    </script>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div class="container">
         <a class="navbar-brand" href="/">Employee Manager</a>
+        <div class="d-flex">
+          <button
+            id="loginBtn"
+            class="btn btn-outline-light me-2"
+            onclick="openLoginModal()"
+          >
+            Login
+          </button>
+          <button
+            id="logoutBtn"
+            class="btn btn-outline-danger d-none"
+            onclick="handleLogout()"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -171,6 +187,48 @@
       </div>
     </div>
 
+    <div class="modal fade" id="loginModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form onsubmit="handleLogin(event)">
+            <div class="modal-header">
+              <h5 class="modal-title">Login</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="username"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
       <div class="modal-dialog">
@@ -212,6 +270,7 @@
     <script>
       let employeeModal;
       let deleteModal;
+      let loginModal;
 
       document.addEventListener("DOMContentLoaded", () => {
         employeeModal = new bootstrap.Modal(
@@ -220,16 +279,93 @@
         deleteModal = new bootstrap.Modal(
           document.getElementById("deleteModal"),
         );
+        loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+
+        checkAuth();
         fetchEmployees();
       });
 
+      function checkAuth() {
+        const token = localStorage.getItem("access_token");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const addBtn = document.querySelector(
+          'button[onclick="openCreateModal()"]',
+        );
+
+        if (token) {
+          loginBtn.classList.add("d-none");
+          logoutBtn.classList.remove("d-none");
+          if (addBtn) addBtn.style.display = "block"; // Show Add button
+        } else {
+          loginBtn.classList.remove("d-none");
+          logoutBtn.classList.add("d-none");
+          if (addBtn) addBtn.style.display = "none"; // Hide Add button
+        }
+      }
+
+      function openLoginModal() {
+        loginModal.show();
+      }
+
+      function handleLogin(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        fetch("/api/login/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken(),
+          },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.token) {
+              localStorage.setItem("access_token", data.token);
+              loginModal.hide();
+              checkAuth();
+              fetchEmployees(); // Refresh data
+            } else {
+              alert("Login Failed: " + data.error);
+            }
+          })
+          .catch((err) => alert("Error: " + err));
+      }
+
+      function handleLogout() {
+        localStorage.removeItem("access_token");
+        checkAuth();
+        fetchEmployees();
+      }
+
+      function authHeader() {
+        const token = localStorage.getItem("access_token");
+        const headers = { "X-CSRFToken": getCSRFToken() };
+        if (token) {
+          headers["Authorization"] = "Bearer " + token;
+        }
+        return headers;
+      }
+
+      // ---------------------------------
+
       function fetchEmployees() {
+        const token = localStorage.getItem("access_token");
         fetch("/api/employees/")
           .then((res) => res.json())
           .then((data) => {
             const tbody = document.getElementById("employee-table-body");
             tbody.innerHTML = "";
             data.forEach((emp) => {
+              // Only show buttons if logged in
+              const actions = token
+                ? `<button class="btn btn-sm btn-info me-1" onclick="openUpdateModal(${emp.id})">Edit</button>
+                   <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.id})">Delete</button>`
+                : `<span class="text-muted">Login to Edit</span>`;
+
               const row = `
                 <tr>
                     <td>${emp.first_name} ${emp.last_name}</td>
@@ -238,8 +374,7 @@
                     <td>${emp.department_name}</td>
                     <td>${emp.role_name}</td>
                     <td class="text-end">
-                        <button class="btn btn-sm btn-info me-1" onclick="openUpdateModal(${emp.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.id})">Delete</button>
+                        ${actions}
                     </td>
                 </tr>
               `;
@@ -288,12 +423,15 @@
           method: method,
           headers: {
             "Content-Type": "application/json",
+            ...authHeader(),
           },
           body: JSON.stringify(data),
         }).then((res) => {
           if (res.ok) {
             employeeModal.hide();
             fetchEmployees();
+          } else if (res.status === 401) {
+            alert("Unauthorized. Please login.");
           } else {
             return res.json().then((err) => {
               alert("Error: " + JSON.stringify(err));
@@ -311,10 +449,15 @@
         const id = document.getElementById("deleteEmployeeId").value;
         fetch(`/api/employees/${id}/`, {
           method: "DELETE",
+          headers: {
+            ...authHeader(),
+          },
         }).then((res) => {
           if (res.ok) {
             deleteModal.hide();
             fetchEmployees();
+          } else if (res.status === 401) {
+            alert("Unauthorized. Please login.");
           } else {
             alert("Error deleting employee");
           }
