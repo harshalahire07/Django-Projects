@@ -360,7 +360,7 @@
             const tbody = document.getElementById("employee-table-body");
             tbody.innerHTML = "";
             data.forEach((emp) => {
-              // Only show buttons if logged in
+      
               const actions = token
                 ? `<button class="btn btn-sm btn-info me-1" onclick="openUpdateModal(${emp.id})">Edit</button>
                    <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.id})">Delete</button>`
@@ -392,9 +392,20 @@
       }
 
       function openUpdateModal(id) {
-        fetch(`/api/employees/${id}/`)
-          .then((res) => res.json())
+        fetch(`/api/employees/${id}/`, {
+          headers: {
+            ...authHeader(),
+          },
+        })
+          .then((res) => {
+            if (res.status === 401) {
+              alert("Unauthorized. Please login.");
+              return null;
+            }
+            return res.json();
+          })
           .then((data) => {
+            if (!data) return;
             document.getElementById("employeeId").value = data.id;
             document.getElementById("first_name").value = data.first_name;
             document.getElementById("last_name").value = data.last_name;
