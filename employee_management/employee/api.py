@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from .models import Employee
 from . import services, selectors
+from attendance import selectors as attendance_selectors
 import jwt
 import datetime
 from django.conf import settings
@@ -21,6 +22,7 @@ def serialize_employee(employee):
         'department_name': employee.department.name,
         'role_id': employee.role.id,
         'role_name': employee.role.name,
+        'current_status': attendance_selectors.get_today_status(employee.id),
     }
 
 SECRET_KEY = settings.SECRET_KEY  

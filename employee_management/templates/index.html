@@ -29,6 +29,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
       <div class="container">
         <a class="navbar-brand" href="/">Employee Manager</a>
+        <a class="btn btn-outline-light ms-3" href="/api/attendance/view/"
+          >Attendance</a
+        >
         <div class="d-flex">
           <button
             id="loginBtn"
@@ -72,6 +75,7 @@
                 <th>Phone</th>
                 <th>Department</th>
                 <th>Role</th>
+                <th>Status</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
@@ -360,10 +364,12 @@
             const tbody = document.getElementById("employee-table-body");
             tbody.innerHTML = "";
             data.forEach((emp) => {
-      
               const actions = token
-                ? `<button class="btn btn-sm btn-info me-1" onclick="openUpdateModal(${emp.id})">Edit</button>
-                   <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.id})">Delete</button>`
+                ? `<button class="btn btn-sm btn-success me-1" onclick="handleAttendance(${emp.id}, 'in')">In</button>
+                    <button class="btn btn-sm btn-warning me-1" onclick="handleAttendance(${emp.id}, 'out')">Out</button>
+                    <span class="vr mx-2"></span>
+                    <button class="btn btn-sm btn-info me-1" onclick="openUpdateModal(${emp.id})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="openDeleteModal(${emp.id})">Delete</button>`
                 : `<span class="text-muted">Login to Edit</span>`;
 
               const row = `
@@ -373,6 +379,7 @@
                     <td>${emp.phone}</td>
                     <td>${emp.department_name}</td>
                     <td>${emp.role_name}</td>
+                    <td><span class="badge ${getStatusBadge(emp.current_status)}">${emp.current_status}</span></td>
                     <td class="text-end">
                         ${actions}
                     </td>
@@ -449,6 +456,36 @@
             });
           }
         });
+      }
+
+      function getStatusBadge(status) {
+        if (status === "Present") return "text-bg-success";
+        if (status === "Absent") return "text-bg-danger";
+        return "text-bg-secondary";
+      }
+
+      function handleAttendance(id, type) {
+        const url =
+          type === "in"
+            ? "/api/attendance/clock-in/"
+            : "/api/attendance/clock-out/";
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...authHeader(),
+          },
+          body: JSON.stringify({ employee_id: id }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              fetchEmployees(); // Refresh list to show new status
+            }
+          })
+          .catch((err) => alert("Error: " + err));
       }
 
       function openDeleteModal(id) {
