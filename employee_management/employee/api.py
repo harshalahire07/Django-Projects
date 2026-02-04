@@ -1,6 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from .models import Employee
 from . import services, selectors
 from attendance import selectors as attendance_selectors
@@ -26,7 +27,7 @@ def serialize_employee(employee):
     }
 
 SECRET_KEY = settings.SECRET_KEY  
-
+@csrf_exempt
 @require_http_methods(["POST"])
 def login_api(request):
     try:
@@ -34,7 +35,14 @@ def login_api(request):
         username = data.get('username')
         password = data.get('password')
         
-        user = authenticate(username=username, password=password)
+        print(f"Login Attempt: Username={username}")
+        
+        user = authenticate(request, username=username, password=password)
+        if user is None:
+             # Fallback for older Django versions or backends not using request
+             user = authenticate(username=username, password=password)
+             
+        print(f"Authentication Result: {user}")
         
         if user is not None:
             payload = {
@@ -46,7 +54,13 @@ def login_api(request):
             return JsonResponse({'token': token, 'username': user.username})
         else:
             return JsonResponse({'error': 'Invalid credentials'}, status=401)
+    except json.JSONDecodeError:
+        print("Login Error: Invalid JSON body")
+        return JsonResponse({'error': 'Invalid JSON body'}, status=400)
     except Exception as e:
+        print(f"Login Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=400)
 
 def jwt_required(f):
@@ -71,6 +85,7 @@ def jwt_required(f):
         return f(request, *args, **kwargs)
     return decorator
 
+@csrf_exempt
 @require_http_methods(["GET", "POST"])
 def EmployeeListApi(request):
     if request.method == 'GET':
@@ -91,6 +106,7 @@ def EmployeeListApi(request):
                 return JsonResponse({'error': 'Invalid JSON'}, status=400)
         return protected_post(request)
 
+@csrf_exempt
 @require_http_methods(["GET", "PUT", "DELETE"])
 @jwt_required
 def EmployeeDetailApi(request, id):
