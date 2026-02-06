@@ -30,3 +30,34 @@ class MyOrganizationsAPIView(APIView):
         organizations = [m.organization for m in memberships]
         serializer = OrganizationSerializer(organizations, many=True)
         return Response(serializer.data)
+
+class OrganizationMembersAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, org_id):
+        # Ensure requesting user belongs to the organization
+        is_member = OrganizationMember.objects.filter(
+            user=request.user,
+            organization_id=org_id
+        ).exists()
+
+        if not is_member:
+            return Response(
+                {"detail": "Access denied"},
+                status=403
+            )
+
+        members = OrganizationMember.objects.filter(
+            organization_id=org_id
+        ).select_related("user")
+
+        data = [
+            {
+                "id": str(member.user.id),
+                "email": member.user.email,
+                "role": member.role
+            }
+            for member in members
+        ]
+
+        return Response(data)
