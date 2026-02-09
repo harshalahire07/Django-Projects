@@ -4,10 +4,14 @@ from apps.accounts.models import User
 import uuid
 # Create your models here.
 class Task(models.Model):
+    STATUS_TODO = "TODO"
+    STATUS_IN_PROGRESS = "IN_PROGRESS"
+    STATUS_DONE = "DONE"
+
     STATUS_CHOICES = (
-        ("TODO", "To Do"),
-        ("IN_PROGRESS", "In Progress"),
-        ("DONE", "Done"),
+        (STATUS_TODO, "To Do"),
+        (STATUS_IN_PROGRESS, "In Progress"),
+        (STATUS_DONE, "Done"),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -30,7 +34,7 @@ class Task(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default="TODO"
+        default=STATUS_TODO
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -15,10 +15,7 @@ class TaskSerializer(serializers.ModelSerializer):
         read_only_fields = ("status",)
 
 class TaskAssignSerializer(serializers.Serializer):
-    assigned_to = serializers.IntegerField()
+    assigned_to = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
-    def validate_assigned_to(self, user_id):
-        try:
-            return User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User does not exist")
+class TaskStatusUpdateSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=Task.STATUS_CHOICES)

@@ -12,13 +12,16 @@ class CreateOrganizationAPIView(APIView):
         serializer = OrganizationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        organization = serializer.save()
+        from django.db import transaction
 
-        OrganizationMember.objects.create(
-            user=request.user,
-            organization=organization,
-            role="ADMIN"
-        )
+        with transaction.atomic():
+            organization = serializer.save()
+
+            OrganizationMember.objects.create(
+                user=request.user,
+                organization=organization,
+                role="ADMIN"
+            )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
