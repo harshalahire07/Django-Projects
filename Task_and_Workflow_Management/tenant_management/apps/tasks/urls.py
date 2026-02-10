@@ -4,6 +4,7 @@ from .views import (
     ProjectTasksAPIView,
     UpdateTaskStatusAPIView,
     AssignTaskAPIView,
+    TaskActivityListAPIView,
 )
 
 urlpatterns = [
@@ -23,4 +24,9 @@ urlpatterns = [
     "<uuid:org_id>/<uuid:task_id>/assign/",
     AssignTaskAPIView.as_view()
     ),
+    path(
+    "<uuid:task_id>/activity/",
+    TaskActivityListAPIView.as_view()
+    ),
+
 ]

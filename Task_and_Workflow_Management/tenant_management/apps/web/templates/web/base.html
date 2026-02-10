@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Task Manager{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav class="navbar" id="navbar" style="display: none">
+      <div class="container nav-container">
+        <a href="/dashboard/" class="brand">Taskflow</a>
+        <div class="nav-links">
+          <a href="/dashboard/">Organizations</a>
+          <a href="#" onclick="logout()">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container main-content">{% block content %}{% endblock %}</div>
+
+    <script src="{% static 'web/js/app.js' %}"></script>
+    <script>
+      // Simple auth check to show/hide navbar
+      document.addEventListener("DOMContentLoaded", () => {
+        const token = localStorage.getItem("access_token");
+        const nav = document.getElementById("navbar");
+        if (token && window.location.pathname !== "/login/") {
+          nav.style.display = "block";
+        }
+      });
+    </script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

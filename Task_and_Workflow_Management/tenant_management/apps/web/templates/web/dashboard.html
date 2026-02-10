@@ -1,0 +1,128 @@
+{% extends 'web/base.html' %} {% block content %}
+<div class="header-row">
+  <h1 class="page-title">My Organizations</h1>
+  <button class="btn" onclick="openCreateOrgModal()">+ New Organization</button>
+</div>
+
+<div id="org-grid" class="grid">
+  <!-- Organizations will be loaded here -->
+  <p>Loading...</p>
+</div>
+
+<!-- Create Org Modal -->
+<div
+  id="create-modal"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+  "
+>
+  <div
+    style="
+      background: white;
+      margin: 10% auto;
+      padding: 2rem;
+      width: 400px;
+      border-radius: 8px;
+    "
+  >
+    <h3>Create Organization</h3>
+    <input
+      type="text"
+      id="new-org-name"
+      placeholder="Organization Name"
+      style="margin: 1rem 0"
+    />
+    <div style="display: flex; gap: 10px; justify-content: flex-end">
+      <button onclick="closeCreateOrgModal()" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button onclick="createOrg()" class="btn">Create</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    checkAuth();
+    loadOrgs();
+  });
+
+  async function loadOrgs() {
+    const grid = document.getElementById("org-grid");
+    try {
+      const response = await fetch("/api/organizations/mine/", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+
+      const orgs = await response.json();
+
+      if (orgs.length === 0) {
+        grid.innerHTML = "<p>You are not a member of any organization.</p>";
+        return;
+      }
+
+      grid.innerHTML = orgs
+        .map(
+          (org) => `
+                <a href="/organizations/${org.id}/projects/" class="card">
+                    <div class="card-title">${org.name}</div>
+                    <div class="card-role">View Projects</div>
+                </a>
+            `,
+        )
+        .join("");
+    } catch (error) {
+      grid.innerHTML =
+        '<p class="alert alert-error">Failed to load organizations.</p>';
+    }
+  }
+
+  function openCreateOrgModal() {
+    document.getElementById("create-modal").style.display = "block";
+  }
+
+  function closeCreateOrgModal() {
+    document.getElementById("create-modal").style.display = "none";
+    document.getElementById("new-org-name").value = "";
+  }
+
+  async function createOrg() {
+    const name = document.getElementById("new-org-name").value;
+    if (!name) return alert("Name is required");
+
+    try {
+      const response = await fetch("/api/organizations/create/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      if (response.ok) {
+        closeCreateOrgModal();
+        loadOrgs();
+      } else {
+        const data = await response.json();
+        alert(data.name || "Failed to create organization");
+      }
+    } catch (e) {
+      alert("Error creating organization");
+    }
+  }
+</script>
+{% endblock %}

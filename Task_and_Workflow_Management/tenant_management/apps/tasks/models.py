@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from apps.projects.models import Project
 from apps.accounts.models import User
@@ -42,3 +43,35 @@ class Task(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.project.name})"
+class TaskActivity(models.Model):
+    ACTIVITY_CHOICES = (
+        ("ASSIGNED", "Assigned"),
+        ("REASSIGNED", "Reassigned"),
+        ("STATUS_CHANGED", "Status Changed"),
+        ("COMMENT", "Comment"),
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name="activities"
+    )
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    activity_type = models.CharField(
+        max_length=50,
+        choices=ACTIVITY_CHOICES
+    )
+
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.activity_type} - {self.task.title}"

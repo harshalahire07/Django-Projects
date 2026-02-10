@@ -1,0 +1,81 @@
+{% extends 'web/base.html' %} {% block content %}
+<div class="header-row">
+  <div>
+    <a id="back-link" href="#" class="btn btn-secondary btn-small"
+      >&larr; Back to Projects</a
+    >
+    <h1 class="page-title" style="margin-top: 1rem">Audit Logs</h1>
+  </div>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Actor</th>
+        <th>Action</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody id="logs-body">
+      <tr>
+        <td colspan="4">Loading...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const pathParts = window.location.pathname.split("/");
+    const orgId = pathParts[2]; // /organizations/{id}/audit/
+
+    document.getElementById("back-link").href =
+      `/organizations/${orgId}/projects/`;
+
+    const tbody = document.getElementById("logs-body");
+
+    try {
+      const response = await fetch(`/api/audit/${orgId}/logs/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      if (response.status === 403) {
+        tbody.innerHTML =
+          '<tr><td colspan="4" class="alert-error">Access Denied. Admin only.</td></tr>';
+        return;
+      }
+
+      const logs = await response.json();
+
+      if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4">No logs found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = logs
+        .map(
+          (l) => `
+            <tr>
+                <td>${new Date(l.created_at).toLocaleString()}</td>
+                <td>${l.actor_email}</td>
+                <td><strong>${l.action}</strong></td>
+                <td>${l.description}</td>
+            </tr>
+        `,
+        )
+        .join("");
+    } catch (e) {
+      tbody.innerHTML =
+        '<tr><td colspan="4" class="alert-error">Error loading logs.</td></tr>';
+    }
+  });
+</script>
+{% endblock %}

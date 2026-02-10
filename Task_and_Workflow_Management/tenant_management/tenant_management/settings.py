@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.projects',
     'apps.tasks',
     'apps.audit',
+    'apps.web',
 ]
 
 REST_FRAMEWORK = {
