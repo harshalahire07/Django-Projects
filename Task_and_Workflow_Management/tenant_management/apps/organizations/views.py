@@ -58,7 +58,8 @@ class OrganizationMembersAPIView(APIView):
             {
                 "id": str(member.user.id),
                 "email": member.user.email,
-                "role": member.role
+                "role": member.role,
+                "joined_at": member.joined_at.isoformat()
             }
             for member in members
         ]

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from apps.organizations.models import OrganizationMember
 from .serializers import (TaskAssignSerializer,TaskActivitySerializer)
-from .models import Task
+from .models import Task ,TaskActivity
 from .serializers import TaskSerializer
 from apps.projects.models import Project
 from apps.organizations.permissions import IsOrganizationAdmin
