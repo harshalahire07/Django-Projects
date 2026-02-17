@@ -1,48 +1,41 @@
-{% extends 'web/base.html' %} {% block content %}
-<div class="header-row">
-  <h1 class="page-title">My Organizations</h1>
-  <button class="btn" onclick="openCreateOrgModal()">+ New Organization</button>
+{% extends 'web/base.html' %}
+{% block title %}Dashboard - Taskflow{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>My Organizations</h1>
+    <p>Select or create an organization to get started</p>
+  </div>
+  <button class="btn btn-primary" onclick="openCreateOrgModal()">
+    <span>+</span> New Organization
+  </button>
 </div>
 
-<div id="org-grid" class="grid">
+<div id="org-grid" class="grid grid-cols-auto">
   <!-- Organizations will be loaded here -->
-  <p>Loading...</p>
+  <p class="text-muted">Loading...</p>
 </div>
 
 <!-- Create Org Modal -->
-<div
-  id="create-modal"
-  style="
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-  "
->
-  <div
-    style="
-      background: white;
-      margin: 10% auto;
-      padding: 2rem;
-      width: 400px;
-      border-radius: 8px;
-    "
-  >
-    <h3>Create Organization</h3>
+<div id="create-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Create Organization</div>
+    </div>
+
     <input
       type="text"
       id="new-org-name"
       placeholder="Organization Name"
-      style="margin: 1rem 0"
+      class="form-control"
+      style="margin-bottom: 1rem"
     />
-    <div style="display: flex; gap: 10px; justify-content: flex-end">
+
+    <div class="modal-actions">
       <button onclick="closeCreateOrgModal()" class="btn btn-secondary">
         Cancel
       </button>
-      <button onclick="createOrg()" class="btn">Create</button>
+      <button onclick="createOrg()" class="btn btn-primary">Create</button>
     </div>
   </div>
 </div>
@@ -70,28 +63,37 @@
       const orgs = await response.json();
 
       if (orgs.length === 0) {
-        grid.innerHTML = "<p>You are not a member of any organization.</p>";
+        grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-icon">🏢</div>
+                <h3>No Organizations Yet</h3>
+                <p>Create your first organization to start managing projects.</p>
+                <button class="btn btn-primary mt-4" onclick="openCreateOrgModal()">Create Organization</button>
+            </div>
+        `;
         return;
       }
 
       grid.innerHTML = orgs
         .map(
           (org) => `
-                <a href="/organizations/${org.id}/projects/" class="card">
+                <a href="/organizations/${org.id}/projects/" class="card card-hover">
                     <div class="card-title">${org.name}</div>
-                    <div class="card-role">View Projects</div>
+                    <div class="badge badge-neutral">Owner</div>
+                    <div class="mt-4 text-small text-muted">Manage projects & members &rarr;</div>
                 </a>
             `,
         )
         .join("");
     } catch (error) {
       grid.innerHTML =
-        '<p class="alert alert-error">Failed to load organizations.</p>';
+        '<div class="alert alert-error">Failed to load organizations.</div>';
     }
   }
 
   function openCreateOrgModal() {
     document.getElementById("create-modal").style.display = "block";
+    document.getElementById("new-org-name").focus();
   }
 
   function closeCreateOrgModal() {

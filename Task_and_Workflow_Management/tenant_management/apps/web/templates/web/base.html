@@ -3,26 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Task Manager{% endblock %}</title>
+    <title>{% block title %}Taskflow{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
   </head>
   <body>
-    <nav class="navbar" id="navbar" style="display: none">
-      <div class="container nav-container">
-        <a href="/dashboard/" class="brand">Taskflow</a>
-        <div class="nav-links">
-          <a href="/dashboard/">Organizations</a>
-          <a href="#" onclick="logout()">Logout</a>
+    <div class="main-layout">
+      <nav class="navbar" id="navbar" style="display: none">
+        <div class="container nav-inner">
+          <a href="/dashboard/" class="brand">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+              ></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            Taskflow
+          </a>
+          <div class="nav-menu">
+            <a href="/dashboard/" class="nav-link">Dashboard</a>
+            <a href="#" onclick="logout()" class="btn btn-sm btn-secondary"
+              >Logout</a
+            >
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
 
-    <div class="container main-content">{% block content %}{% endblock %}</div>
+      <main class="container main-content">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer
+        style="
+          text-align: center;
+          padding: 2rem;
+          color: var(--color-text-muted);
+          font-size: 0.85rem;
+        "
+      >
+        &copy; {% now "Y" %} Taskflow. All rights reserved.
+      </footer>
+    </div>
 
     <script src="{% static 'web/js/app.js' %}"></script>
     <script>
@@ -30,7 +66,10 @@
       document.addEventListener("DOMContentLoaded", () => {
         const token = localStorage.getItem("access_token");
         const nav = document.getElementById("navbar");
-        if (token && window.location.pathname !== "/login/") {
+        const currentPath = window.location.pathname;
+        const publicPaths = ["/login/", "/register/"];
+
+        if (token && !publicPaths.includes(currentPath)) {
           nav.style.display = "block";
         }
       });

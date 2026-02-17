@@ -1,13 +1,29 @@
-{% extends 'web/base.html' %} {% block content %}
-<div class="header-row">
-  <div>
-    <a id="back-link" href="#" class="btn btn-secondary btn-small"
-      >&larr; Back to Projects</a
+{% extends 'web/base.html' %}
+{% block title %}Tasks - Taskflow{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+      "
     >
-    <h1 class="page-title" style="margin-top: 1rem">Tasks</h1>
+      <a id="back-link" href="#" class="btn btn-sm btn-secondary"
+        >&larr; Projects</a
+      >
+      <h1 style="margin: 0">Tasks</h1>
+    </div>
+    <p class="text-muted" style="margin-left: 0.5rem">
+      Track and manage tasks for this project
+    </p>
   </div>
   <div id="admin-actions" style="display: none">
-    <button class="btn" onclick="openCreateTaskModal()">+ New Task</button>
+    <button class="btn btn-primary" onclick="openCreateTaskModal()">
+      <span>+</span> New Task
+    </button>
   </div>
 </div>
 
@@ -17,76 +33,83 @@
   <table>
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Assigned To</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th style="width: 40%">Title</th>
+        <th style="width: 20%">Assigned To</th>
+        <th style="width: 15%">Status</th>
+        <th style="width: 25%">Actions</th>
       </tr>
     </thead>
     <tbody id="tasks-body">
       <tr>
-        <td colspan="4">Loading tasks...</td>
+        <td colspan="4" class="text-center text-muted">Loading tasks...</td>
       </tr>
     </tbody>
   </table>
 </div>
 
 <!-- Create Task Modal -->
-<div id="create-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div style="background:white; margin: 5% auto; padding:2rem; width:400px; border-radius:8px;">
-        <h3>Create Task</h3>
-        <input type="text" id="new-task-title" placeholder="Task Title" style="margin: 1rem 0;">
-        <textarea id="new-task-desc" placeholder="Description" rows="3" style="width:100%; margin-bottom:1rem; padding:0.5rem;"></textarea>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button onclick="closeCreateTaskModal()" class="btn btn-secondary">Cancel</button>
-            <button onclick="createTask()" class="btn">Create</button>
-        </div>
+<div id="create-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Create Task</div>
     </div>
-</div>
-
-<!-- Assign Modal -->
-<div
-  id="assign-modal"
-  style="
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-  "
->
-  <div
-    style="
-      background: white;
-      margin: 10% auto;
-      padding: 2rem;
-      width: 400px;
-      border-radius: 8px;
-    "
-  >
-    <h3>Assign Task</h3>
-    <select id="assign-select" style="margin: 1rem 0"></select>
-    <div style="display: flex; gap: 10px; justify-content: flex-end">
-      <button onclick="closeAssignModal()" class="btn btn-secondary">
+    <div class="form-group">
+      <label for="new-task-title">Task Title</label>
+      <input type="text" id="new-task-title" placeholder="Enter task title" />
+    </div>
+    <div class="form-group">
+      <label for="new-task-desc">Description</label>
+      <textarea
+        id="new-task-desc"
+        placeholder="Task description"
+        rows="3"
+      ></textarea>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeCreateTaskModal()" class="btn btn-secondary">
         Cancel
       </button>
-      <button onclick="confirmAssign()" class="btn">Assign</button>
+      <button onclick="createTask()" class="btn btn-primary">
+        Create Task
+      </button>
     </div>
   </div>
 </div>
+
+<!-- Assign Modal -->
+<div id="assign-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Assign Task</div>
+    </div>
+
+    <div class="form-group">
+      <label for="assign-select">Select Member</label>
+      <select id="assign-select"></select>
+    </div>
+
+    <div class="modal-actions">
+      <button onclick="closeAssignModal()" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button onclick="confirmAssign()" class="btn btn-primary">Assign</button>
+    </div>
+  </div>
 </div>
 
 <!-- Activity Modal -->
-<div id="activity-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div style="background:white; margin: 5% auto; padding:2rem; width:500px; max-height:80vh; overflow-y:auto; border-radius:8px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-            <h3>Task History</h3>
-            <button onclick="closeActivityModal()" class="btn btn-secondary btn-small">X</button>
-        </div>
-        <ul id="activity-list" style="list-style:none; padding:0;"></ul>
+<div id="activity-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width: 600px">
+    <div class="modal-header">
+      <div class="modal-title">Task History</div>
+      <button onclick="closeActivityModal()" class="btn btn-sm btn-secondary">
+        Close
+      </button>
     </div>
+    <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem">
+      <ul id="activity-list" style="list-style: none; padding: 0"></ul>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -163,7 +186,8 @@
       const tasks = await response.json();
 
       if (tasks.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4">No tasks found.</td></tr>';
+        tbody.innerHTML =
+          '<tr><td colspan="4" class="text-center text-muted" style="padding: 2rem;">No tasks found. Create one to get started.</td></tr>';
         return;
       }
 
@@ -172,7 +196,7 @@
           const assigneeName = task.assigned_to
             ? usersList.find((u) => u.id == task.assigned_to)?.email ||
               "Unknown"
-            : "Unassigned";
+            : '<span class="text-muted">Unassigned</span>';
 
           let actions = "";
 
@@ -183,25 +207,34 @@
               task.assigned_to == currentUserId) &&
             nextStatus;
 
+          // Action Container
+          actions += '<div class="flex gap-2">';
+
           if (canUpdateStatus) {
-            actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-small btn-secondary">Mark ${formatStatus(nextStatus)}</button> `;
+            actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-sm btn-secondary" title="Move to ${formatStatus(nextStatus)}">Mark ${formatStatus(nextStatus)}</button>`;
           }
 
           // Assign Actions (Admin only)
           if (currentUserRole === "ADMIN") {
-            actions += `<button onclick="openAssignModal('${task.id}')" class="btn btn-small">Assign</button> `;
+            actions += `<button onclick="openAssignModal('${task.id}')" class="btn btn-sm btn-secondary">Assign</button>`;
           }
 
-          actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-small btn-secondary">History</button>`;
+          actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-sm btn-secondary">History</button>`;
+          actions += "</div>";
 
           return `
                 <tr>
                     <td>
-                        <div style="font-weight:500;">${task.title}</div>
-                        <div style="font-size:0.85rem; color:#6b7280;">${task.description}</div>
+                        <div class="font-medium">${task.title}</div>
+                        <div class="text-small text-muted" style="margin-top: 0.25rem;">${task.description || ""}</div>
                     </td>
-                    <td>${assigneeName}</td>
-                    <td><span class="status-badge status-${task.status.toLowerCase()}">${formatStatus(task.status)}</span></td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            ${task.assigned_to ? `<div class="avatar-circle">${assigneeName[0].toUpperCase()}</div>` : ""}
+                            <span class="text-small">${assigneeName}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge ${getStatusBadgeClass(task.status)}">${formatStatus(task.status)}</span></td>
                     <td>${actions}</td>
                 </tr>
                 `;
@@ -212,6 +245,19 @@
     }
   }
 
+  function getStatusBadgeClass(status) {
+    switch (status) {
+      case "TODO":
+        return "badge-todo";
+      case "IN_PROGRESS":
+        return "badge-warning";
+      case "DONE":
+        return "badge-success";
+      default:
+        return "badge-neutral";
+    }
+  }
+
   function getNextStatus(current) {
     if (current === "TODO") return "IN_PROGRESS";
     if (current === "IN_PROGRESS") return "DONE";
@@ -219,12 +265,11 @@
   }
 
   function formatStatus(status) {
+    if (!status) return "";
     return status.replace("_", " "); // TODO, IN PROGRESS
   }
 
   async function updateStatus(taskId, newStatus) {
-    if (!confirm(`Change status to ${formatStatus(newStatus)}?`)) return;
-
     try {
       const response = await fetch(`/api/tasks/${taskId}/update-status/`, {
         method: "PATCH",
@@ -290,72 +335,87 @@
 
   // Activity Modal Logic
   async function openActivityModal(taskId) {
-      document.getElementById('activity-modal').style.display = 'block';
-      const list = document.getElementById('activity-list');
-      list.innerHTML = '<li>Loading...</li>';
-      
-      try {
-          const response = await fetch(`/api/tasks/${taskId}/activity/`, {
-              headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-          });
-          const activities = await response.json();
-          
-          if(activities.length === 0) {
-              list.innerHTML = '<li>No activity recorded.</li>';
-              return;
-          }
-          
-          list.innerHTML = activities.map(a => `
-              <li style="margin-bottom:0.5rem; padding-bottom:0.5rem; border-bottom:1px solid #eee;">
-                  <div style="font-size:0.85rem; color:#6b7280;">${new Date(a.created_at).toLocaleString()}</div>
-                  <div style="font-weight:500;">${a.activity_type}</div>
-                  <div>${a.message}</div>
-                  <div style="font-size:0.85rem; color:#9ca3af;">By: ${a.actor_email || 'Unknown'}</div>
+    document.getElementById("activity-modal").style.display = "block";
+    const list = document.getElementById("activity-list");
+    list.innerHTML = '<li class="text-muted">Loading...</li>';
+
+    try {
+      const response = await fetch(`/api/tasks/${taskId}/activity/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      const activities = await response.json();
+
+      if (activities.length === 0) {
+        list.innerHTML = '<li class="text-muted">No activity recorded.</li>';
+        return;
+      }
+
+      list.innerHTML = activities
+        .map(
+          (a) => `
+              <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-medium text-small text-muted">${new Date(a.created_at).toLocaleString()}</span>
+                    <span class="badge badge-neutral" style="font-size: 0.7rem;">${a.activity_type}</span>
+                  </div>
+                  <div style="margin-bottom: 0.25rem;">${a.message}</div>
+                  <div class="text-small text-muted">By: ${a.actor_email || "Unknown"}</div>
               </li>
-          `).join('');
-          
-      } catch(e) { list.innerHTML = '<li class="alert-error">Failed to load activity.</li>'; }
+          `,
+        )
+        .join("");
+    } catch (e) {
+      list.innerHTML = '<li class="alert-error">Failed to load activity.</li>';
+    }
   }
 
   function closeActivityModal() {
-      document.getElementById('activity-modal').style.display = 'none';
+    document.getElementById("activity-modal").style.display = "none";
   }
 
   // Create Task Logic
   function openCreateTaskModal() {
-      document.getElementById('create-modal').style.display = 'block';
+    document.getElementById("create-modal").style.display = "block";
+    document.getElementById("new-task-title").focus();
   }
 
   function closeCreateTaskModal() {
-      document.getElementById('create-modal').style.display = 'none';
-      document.getElementById('new-task-title').value = '';
-      document.getElementById('new-task-desc').value = '';
+    document.getElementById("create-modal").style.display = "none";
+    document.getElementById("new-task-title").value = "";
+    document.getElementById("new-task-desc").value = "";
   }
 
   async function createTask() {
-      const title = document.getElementById('new-task-title').value;
-      const description = document.getElementById('new-task-desc').value;
-      
-      if (!title) return alert('Title is required');
+    const title = document.getElementById("new-task-title").value;
+    const description = document.getElementById("new-task-desc").value;
 
-      try {
-          const response = await fetch(`/api/tasks/${currentOrgId}/${currentProjectId}/create/`, {
-              method: 'POST',
-              headers: {
-                  'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ title, description })
-          });
+    if (!title) return alert("Title is required");
 
-          if (response.ok) {
-              closeCreateTaskModal();
-              loadTasks();
-          } else {
-              const data = await response.json();
-              alert(data.detail || 'Failed to create task');
-          }
-      } catch (e) { alert('Error creating task'); }
+    try {
+      const response = await fetch(
+        `/api/tasks/${currentOrgId}/${currentProjectId}/create/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title, description }),
+        },
+      );
+
+      if (response.ok) {
+        closeCreateTaskModal();
+        loadTasks();
+      } else {
+        const data = await response.json();
+        alert(data.detail || "Failed to create task");
+      }
+    } catch (e) {
+      alert("Error creating task");
+    }
   }
 </script>
 {% endblock %}
