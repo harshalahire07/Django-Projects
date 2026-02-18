@@ -1,17 +1,21 @@
-{% extends 'web/base.html' %} {% block title %}Register - Taskflow{% endblock %}
+{% extends 'web/base.html' %}
+{% block title %}Register - Taskflow{% endblock %}
 {% block content %}
 <div class="auth-form-card">
-  <div class="card card-hover">
+  <div class="card card-hover" style="border-top: 4px solid var(--color-primary);">
     <div style="text-align: center; margin-bottom: 2rem">
-      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem">Create Account</h2>
-      <p class="text-muted">Join Taskflow to manage your projects</p>
+      <div class="avatar-circle" style="width: 48px; height: 48px; margin: 0 auto 1rem auto; font-size: 1.5rem; background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%); box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);">
+        🚀
+      </div>
+      <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem">Start your journey</h2>
+      <p class="text-muted">Create an account to manage your workflow</p>
     </div>
 
     <div id="error-alert" class="alert alert-error" style="display: none"></div>
 
     <form id="register-form">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email Address</label>
         <input
           type="email"
           id="email"
@@ -29,25 +33,22 @@
         />
       </div>
       <div class="form-group">
-        <label for="role">Role (Default: MEMBER)</label>
+        <label for="role">I want to be a:</label>
         <select id="role">
-          <option value="MEMBER">Member</option>
-          <option value="ADMIN">Admin</option>
+          <option value="MEMBER">Team Member</option>
+          <option value="ADMIN">Organization Admin</option>
         </select>
-        <p class="text-small text-muted mt-2">
-          (Demo Role Selection - In production this would be handled
-          differently)
-        </p>
+        <p class="text-xs text-muted mt-2">(Note: This determines your permissions in organizations you create)</p>
       </div>
       <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
-        Sign Up
+        Create Account &rarr;
       </button>
     </form>
 
-    <div style="text-align: center; margin-top: 1.5rem">
+    <div style="text-align: center; margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
       <p class="text-small text-muted">
         Already have an account?
-        <a href="/login/" style="color: var(--color-primary); font-weight: 500"
+        <a href="/login/" style="color: var(--color-primary); font-weight: 600"
           >Sign in</a
         >
       </p>
@@ -70,7 +71,7 @@
     const role = document.getElementById("role").value;
 
     btn.disabled = true;
-    btn.textContent = "Registering...";
+    btn.textContent = "Creating Account...";
     document.getElementById("error-alert").style.display = "none";
 
     try {
@@ -81,32 +82,30 @@
       });
 
       if (response.ok) {
-        alert("Registration successful! Redirecting to login...");
+        // Success animation or message could go here
         window.location.href = "/login/";
       } else {
         let errorMsg = "Registration failed";
         try {
           const data = await response.json();
           if (data.email) errorMsg = `Email: ${data.email.join(", ")}`;
-          else if (data.password)
-            errorMsg = `Password: ${data.password.join(", ")}`;
+          else if (data.password) errorMsg = `Password: ${data.password.join(", ")}`;
           else if (data.detail) errorMsg = data.detail;
           else errorMsg = JSON.stringify(data);
         } catch (e) {
-          // Fallback for non-JSON errors (like 500 HTML pages)
           const text = await response.text();
           console.error("Server Error:", text);
-          errorMsg = `Server Error (${response.status}): Check console for details.`;
+          errorMsg = `Server Error: Please try again later.`;
         }
 
         showError(errorMsg);
       }
     } catch (error) {
       console.error(error);
-      showError("Network error. Please try again.");
+      showError("Network error. Please check your connection.");
     } finally {
       btn.disabled = false;
-      btn.textContent = "Sign Up";
+      btn.textContent = "Create Account →";
     }
   }
 

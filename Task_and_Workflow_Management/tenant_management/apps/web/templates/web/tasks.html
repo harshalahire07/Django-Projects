@@ -3,22 +3,24 @@
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-      "
-    >
-      <a id="back-link" href="#" class="btn btn-sm btn-secondary"
-        >&larr; Projects</a
+    <div class="flex items-center gap-2 mb-2">
+      <a
+        href="/dashboard/"
+        class="text-muted hover:text-primary transition-colors"
+        >Dashboard</a
       >
-      <h1 style="margin: 0">Tasks</h1>
+      <span class="text-muted">/</span>
+      <a
+        id="back-link"
+        href="#"
+        class="text-muted hover:text-primary transition-colors"
+        >Projects</a
+      >
+      <span class="text-muted">/</span>
+      <span class="font-medium">Tasks</span>
     </div>
-    <p class="text-muted" style="margin-left: 0.5rem">
-      Track and manage tasks for this project
-    </p>
+    <h1>Board</h1>
+    <p class="text-muted">Track assignments and progress</p>
   </div>
   <div id="admin-actions" style="display: none">
     <button class="btn btn-primary" onclick="openCreateTaskModal()">
@@ -33,15 +35,21 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 40%">Title</th>
+        <th style="width: 45%; padding-left: 2rem">Task</th>
         <th style="width: 20%">Assigned To</th>
         <th style="width: 15%">Status</th>
-        <th style="width: 25%">Actions</th>
+        <th style="width: 20%; text-align: right; padding-right: 2rem">
+          Actions
+        </th>
       </tr>
     </thead>
     <tbody id="tasks-body">
       <tr>
-        <td colspan="4" class="text-center text-muted">Loading tasks...</td>
+        <td colspan="4" class="text-center text-muted" style="padding: 3rem">
+          <span style="display: inline-block; animation: pulse 1.5s infinite"
+            >Loading tasks...</span
+          >
+        </td>
       </tr>
     </tbody>
   </table>
@@ -55,14 +63,19 @@
     </div>
     <div class="form-group">
       <label for="new-task-title">Task Title</label>
-      <input type="text" id="new-task-title" placeholder="Enter task title" />
+      <input
+        type="text"
+        id="new-task-title"
+        placeholder="What needs to be done?"
+      />
     </div>
     <div class="form-group">
       <label for="new-task-desc">Description</label>
       <textarea
         id="new-task-desc"
-        placeholder="Task description"
-        rows="3"
+        placeholder="Add more details..."
+        rows="4"
+        style="resize: vertical"
       ></textarea>
     </div>
     <div class="modal-actions">
@@ -84,7 +97,7 @@
     </div>
 
     <div class="form-group">
-      <label for="assign-select">Select Member</label>
+      <label for="assign-select">Select Team Member</label>
       <select id="assign-select"></select>
     </div>
 
@@ -92,7 +105,9 @@
       <button onclick="closeAssignModal()" class="btn btn-secondary">
         Cancel
       </button>
-      <button onclick="confirmAssign()" class="btn btn-primary">Assign</button>
+      <button onclick="confirmAssign()" class="btn btn-primary">
+        Confirm Assignment
+      </button>
     </div>
   </div>
 </div>
@@ -103,7 +118,7 @@
     <div class="modal-header">
       <div class="modal-title">Task History</div>
       <button onclick="closeActivityModal()" class="btn btn-sm btn-secondary">
-        Close
+        &times;
       </button>
     </div>
     <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem">
@@ -187,7 +202,7 @@
 
       if (tasks.length === 0) {
         tbody.innerHTML =
-          '<tr><td colspan="4" class="text-center text-muted" style="padding: 2rem;">No tasks found. Create one to get started.</td></tr>';
+          '<tr><td colspan="4" class="text-center text-muted" style="padding: 4rem;">No tasks found. Create one to get started.</td></tr>';
         return;
       }
 
@@ -196,7 +211,7 @@
           const assigneeName = task.assigned_to
             ? usersList.find((u) => u.id == task.assigned_to)?.email ||
               "Unknown"
-            : '<span class="text-muted">Unassigned</span>';
+            : null;
 
           let actions = "";
 
@@ -208,10 +223,10 @@
             nextStatus;
 
           // Action Container
-          actions += '<div class="flex gap-2">';
+          actions += '<div class="flex gap-2 justify-end">';
 
           if (canUpdateStatus) {
-            actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-sm btn-secondary" title="Move to ${formatStatus(nextStatus)}">Mark ${formatStatus(nextStatus)}</button>`;
+            actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-sm btn-secondary">Mark ${formatStatus(nextStatus)}</button>`;
           }
 
           // Assign Actions (Admin only)
@@ -219,29 +234,33 @@
             actions += `<button onclick="openAssignModal('${task.id}')" class="btn btn-sm btn-secondary">Assign</button>`;
           }
 
-          actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-sm btn-secondary">History</button>`;
+          actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-sm btn-secondary" title="View History">📜</button>`;
           actions += "</div>";
 
           return `
                 <tr>
-                    <td>
-                        <div class="font-medium">${task.title}</div>
-                        <div class="text-small text-muted" style="margin-top: 0.25rem;">${task.description || ""}</div>
+                    <td style="padding-left: 2rem;">
+                        <div class="font-medium" style="color: var(--color-text-main);">${task.title}</div>
+                        <div class="text-small text-muted line-clamp-1" style="margin-top: 0.25rem;">${task.description || ""}</div>
                     </td>
                     <td>
                         <div class="flex items-center gap-2">
-                            ${task.assigned_to ? `<div class="avatar-circle">${assigneeName[0].toUpperCase()}</div>` : ""}
-                            <span class="text-small">${assigneeName}</span>
+                            ${
+                              task.assigned_to && assigneeName
+                                ? `<div class="avatar-circle" style="width: 24px; height: 24px; font-size: 0.7rem;">${assigneeName[0].toUpperCase()}</div>
+                                <span class="text-small font-medium">${assigneeName.split("@")[0]}</span>`
+                                : '<span class="badge badge-neutral text-xs">Unassigned</span>'
+                            }
                         </div>
                     </td>
                     <td><span class="badge ${getStatusBadgeClass(task.status)}">${formatStatus(task.status)}</span></td>
-                    <td>${actions}</td>
+                    <td style="padding-right: 2rem;">${actions}</td>
                 </tr>
                 `;
         })
         .join("");
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="4" class="alert-error">Error: ${error.detail || "Failed to load"}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="alert-error text-center">Error: ${error.detail || "Failed to load"}</td></tr>`;
     }
   }
 
@@ -337,7 +356,8 @@
   async function openActivityModal(taskId) {
     document.getElementById("activity-modal").style.display = "block";
     const list = document.getElementById("activity-list");
-    list.innerHTML = '<li class="text-muted">Loading...</li>';
+    list.innerHTML =
+      '<li class="text-center text-muted py-4">Loading history...</li>';
 
     try {
       const response = await fetch(`/api/tasks/${taskId}/activity/`, {
@@ -348,7 +368,8 @@
       const activities = await response.json();
 
       if (activities.length === 0) {
-        list.innerHTML = '<li class="text-muted">No activity recorded.</li>';
+        list.innerHTML =
+          '<li class="text-center text-muted py-4">No activity recorded.</li>';
         return;
       }
 
@@ -357,17 +378,21 @@
           (a) => `
               <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
                   <div class="flex justify-between items-center mb-1">
-                    <span class="font-medium text-small text-muted">${new Date(a.created_at).toLocaleString()}</span>
-                    <span class="badge badge-neutral" style="font-size: 0.7rem;">${a.activity_type}</span>
+                    <span class="text-xs text-muted font-medium">${new Date(a.created_at).toLocaleString()}</span>
+                    <span class="badge badge-neutral" style="font-size: 0.65rem;">${a.activity_type}</span>
                   </div>
-                  <div style="margin-bottom: 0.25rem;">${a.message}</div>
-                  <div class="text-small text-muted">By: ${a.actor_email || "Unknown"}</div>
+                  <div class="text-sm my-1">${a.message}</div>
+                  <div class="flex items-center gap-2 mt-2">
+                       <div class="avatar-circle" style="width: 20px; height: 20px; font-size: 0.6rem;">${(a.actor_email || "U")[0].toUpperCase()}</div>
+                       <span class="text-xs text-muted">By: ${a.actor_email || "Unknown"}</span>
+                  </div>
               </li>
           `,
         )
         .join("");
     } catch (e) {
-      list.innerHTML = '<li class="alert-error">Failed to load activity.</li>';
+      list.innerHTML =
+        '<li class="alert alert-error">Failed to load activity.</li>';
     }
   }
 

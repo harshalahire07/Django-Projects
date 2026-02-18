@@ -1,29 +1,29 @@
-{% extends 'web/base.html' %} {% block title %}Projects - Taskflow{% endblock %}
+{% extends 'web/base.html' %}
+{% block title %}Projects - Taskflow{% endblock %}
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-      "
-    >
-      <a href="/dashboard/" class="btn btn-sm btn-secondary"
-        >&larr; Dashboard</a
+    <div class="flex items-center gap-2 mb-2">
+      <a
+        href="/dashboard/"
+        class="text-muted hover:text-primary transition-colors"
       >
-      <h1 style="margin: 0">Projects</h1>
+        Dashboard
+      </a>
+      <span class="text-muted">/</span>
+      <span class="font-medium">Projects</span>
     </div>
-    <p class="text-muted" style="margin-left: 0.5rem">
-      Manage projects within this organization
-    </p>
+    <h1>Projects</h1>
+    <p class="text-muted">Manage your team's work and track progress.</p>
   </div>
+
   <div class="flex gap-2">
-    <a id="members-link" href="#" class="btn btn-secondary">Members</a>
-    <a id="audit-link" href="#" class="btn btn-secondary" style="display: none"
-      >Audit Logs</a
-    >
+    <a id="members-link" href="#" class="btn btn-secondary">
+      <span>👥</span> Members
+    </a>
+    <a id="audit-link" href="#" class="btn btn-secondary" style="display: none">
+      <span>📜</span> Audit Logs
+    </a>
     <button
       class="btn btn-primary"
       id="create-project-btn"
@@ -36,27 +36,34 @@
 </div>
 
 <div id="projects-grid" class="grid grid-cols-auto">
-  <p class="text-muted">Loading projects...</p>
+  <div class="card">
+    <p class="text-muted">Loading projects...</p>
+  </div>
 </div>
 
 <!-- Create Project Modal -->
 <div id="create-modal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <div class="modal-title">Create Project</div>
+      <div class="modal-title">Create New Project</div>
     </div>
 
     <div class="form-group">
       <label for="new-proj-name">Project Name</label>
-      <input type="text" id="new-proj-name" placeholder="Enter project name" />
+      <input
+        type="text"
+        id="new-proj-name"
+        placeholder="e.g. Q4 Marketing Campaign"
+      />
     </div>
 
     <div class="form-group">
-      <label for="new-proj-desc">Description</label>
+      <label for="new-proj-desc">Description (Optional)</label>
       <textarea
         id="new-proj-desc"
-        placeholder="Brief description of the project"
+        placeholder="What is this project about?"
         rows="3"
+        style="resize: vertical"
       ></textarea>
     </div>
 
@@ -100,7 +107,8 @@
         return;
       }
       if (response.status === 403) {
-        grid.innerHTML = '<div class="alert alert-error">Access denied.</div>';
+        grid.innerHTML =
+          '<div class="alert alert-error">Access denied. You do not have permission to view this organization.</div>';
         return;
       }
 
@@ -109,24 +117,33 @@
       if (projects.length === 0) {
         grid.innerHTML = `
             <div class="empty-state" style="grid-column: 1/-1;">
-                <div class="empty-icon">📁</div>
-                <h3>No Projects Yet</h3>
-                <p>Start by creating your first project.</p>
-                <button class="btn btn-primary mt-4" onclick="openCreateProjectModal()">Create Project</button>
+                <div class="empty-icon">📂</div>
+                <h3>No Projects Found</h3>
+                <p>Projects help you organize tasks. Create one to get started.</p>
+                <div id="empty-state-action" style="display:none;">
+                    <button class="btn btn-primary mt-4" onclick="openCreateProjectModal()">Create Project</button>
+                </div>
             </div>
         `;
+        // Show button in empty state only if admin (will be handled by checkRole but we can fail safe)
         return;
       }
 
       grid.innerHTML = projects
         .map(
           (p) => `
-                <a href="/organizations/${currentOrgId}/projects/${p.id}/tasks/" class="card card-hover">
-                    <div class="card-title">${p.name}</div>
-                    <p class="text-muted text-small" style="margin-bottom: 1rem; min-height: 40px;">
-                        ${p.description || "No description provided."}
-                    </p>
-                    <div class="badge badge-neutral">View Tasks &rarr;</div>
+                <a href="/organizations/${currentOrgId}/projects/${p.id}/tasks/" class="card card-hover flex flex-col justify-between" style="min-height: 200px;">
+                    <div>
+                        <div class="card-title" style="font-size: 1.25rem;">${p.name}</div>
+                        <p class="text-muted text-small line-clamp-2">
+                            ${p.description || "No description provided."}
+                        </p>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+                        <span class="text-xs font-medium text-primary">View Tasks &rarr;</span>
+                        <div class="text-xs text-muted">Created ${new Date(p.created_at).toLocaleDateString()}</div>
+                    </div>
                 </a>
             `,
         )
@@ -134,7 +151,7 @@
     } catch (error) {
       console.error(error);
       grid.innerHTML =
-        '<div class="alert alert-error">Error loading projects.</div>';
+        '<div class="alert alert-error">Error loading projects. Please try refreshing.</div>';
     }
   });
 
@@ -154,8 +171,13 @@
       const me = members.find((m) => m.id == userId);
 
       if (me && me.role === "ADMIN") {
-        document.getElementById("create-project-btn").style.display = "block";
+        document.getElementById("create-project-btn").style.display =
+          "inline-flex";
         document.getElementById("audit-link").style.display = "inline-flex";
+
+        // Also show empty state button if exists
+        const emptyAction = document.getElementById("empty-state-action");
+        if (emptyAction) emptyAction.style.display = "block";
       }
     } catch (e) {
       console.error("Role check failed", e);

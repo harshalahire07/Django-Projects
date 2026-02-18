@@ -11,7 +11,6 @@ class AuditLogListAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, org_id):
-        # 1️⃣ Check ADMIN role
         is_admin = OrganizationMember.objects.filter(
             user=request.user,
             organization_id=org_id,
@@ -24,7 +23,6 @@ class AuditLogListAPIView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # 2️⃣ Fetch logs (org-scoped)
         logs = AuditLog.objects.filter(
             organization_id=org_id
         ).order_by("-created_at")

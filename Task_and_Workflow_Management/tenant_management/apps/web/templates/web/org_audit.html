@@ -3,22 +3,24 @@
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-      "
-    >
-      <a id="back-link" href="#" class="btn btn-sm btn-secondary"
-        >&larr; Projects</a
+    <div class="flex items-center gap-2 mb-2">
+      <a
+        href="/dashboard/"
+        class="text-muted hover:text-primary transition-colors"
+        >Dashboard</a
       >
-      <h1 style="margin: 0">Audit Logs</h1>
+      <span class="text-muted">/</span>
+      <a
+        id="back-link"
+        href="#"
+        class="text-muted hover:text-primary transition-colors"
+        >Projects</a
+      >
+      <span class="text-muted">/</span>
+      <span class="font-medium">Audit Logs</span>
     </div>
-    <p class="text-muted" style="margin-left: 0.5rem">
-      Activity history for this organization
-    </p>
+    <h1>Audit Logs</h1>
+    <p class="text-muted">Activity history for this organization</p>
   </div>
 </div>
 
@@ -26,7 +28,7 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 20%">Time</th>
+        <th style="width: 20%; padding-left: 2rem">Time</th>
         <th style="width: 25%">Actor</th>
         <th style="width: 15%">Action</th>
         <th style="width: 40%">Description</th>
@@ -34,7 +36,11 @@
     </thead>
     <tbody id="logs-body">
       <tr>
-        <td colspan="4" class="text-center text-muted">Loading...</td>
+        <td colspan="4" class="text-center text-muted" style="padding: 3rem">
+          <span style="display: inline-block; animation: pulse 1.5s infinite"
+            >Loading logs...</span
+          >
+        </td>
       </tr>
     </tbody>
   </table>
@@ -71,7 +77,7 @@
 
       if (logs.length === 0) {
         tbody.innerHTML =
-          '<tr><td colspan="4" class="text-center text-muted">No logs found.</td></tr>';
+          '<tr><td colspan="4" class="text-center text-muted" style="padding: 3rem;">No logs found.</td></tr>';
         return;
       }
 
@@ -79,15 +85,15 @@
         .map(
           (l) => `
             <tr>
-                <td class="text-muted text-small">${new Date(l.created_at).toLocaleString()}</td>
+                <td class="text-muted text-small" style="padding-left: 2rem;">${new Date(l.created_at).toLocaleString()}</td>
                 <td>
                     <div class="flex items-center gap-2">
                          <div class="avatar-circle" style="width: 24px; height: 24px; font-size: 0.7rem;">${l.actor_email[0].toUpperCase()}</div>
-                         <span>${l.actor_email}</span>
+                         <span class="font-medium text-small">${l.actor_email}</span>
                     </div>
                 </td>
                 <td><span class="badge badge-neutral">${l.action}</span></td>
-                <td class="text-small">${l.description}</td>
+                <td class="text-small text-muted">${l.description}</td>
             </tr>
         `,
         )

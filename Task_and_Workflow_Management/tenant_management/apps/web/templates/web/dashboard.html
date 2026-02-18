@@ -4,7 +4,7 @@
 <div class="page-header">
   <div class="page-title-group">
     <h1>My Organizations</h1>
-    <p>Select or create an organization to get started</p>
+    <p class="text-muted">Select an organization to manage projects and teams</p>
   </div>
   <button class="btn btn-primary" onclick="openCreateOrgModal()">
     <span>+</span> New Organization
@@ -13,7 +13,9 @@
 
 <div id="org-grid" class="grid grid-cols-auto">
   <!-- Organizations will be loaded here -->
-  <p class="text-muted">Loading...</p>
+  <div class="card">
+      <p class="text-muted">Loading organizations...</p>
+  </div>
 </div>
 
 <!-- Create Org Modal -->
@@ -22,20 +24,22 @@
     <div class="modal-header">
       <div class="modal-title">Create Organization</div>
     </div>
-
-    <input
-      type="text"
-      id="new-org-name"
-      placeholder="Organization Name"
-      class="form-control"
-      style="margin-bottom: 1rem"
-    />
+    
+    <div class="form-group">
+        <label for="new-org-name">Organization Name</label>
+        <input
+        type="text"
+        id="new-org-name"
+        placeholder="e.g. Acme Corp"
+        />
+        <p class="text-xs text-muted mt-2">This will be your workspace name.</p>
+    </div>
 
     <div class="modal-actions">
       <button onclick="closeCreateOrgModal()" class="btn btn-secondary">
         Cancel
       </button>
-      <button onclick="createOrg()" class="btn btn-primary">Create</button>
+      <button onclick="createOrg()" class="btn btn-primary">Create Organization</button>
     </div>
   </div>
 </div>
@@ -67,7 +71,7 @@
             <div class="empty-state" style="grid-column: 1/-1;">
                 <div class="empty-icon">🏢</div>
                 <h3>No Organizations Yet</h3>
-                <p>Create your first organization to start managing projects.</p>
+                <p>Create your first organization to start managing projects and tasks.</p>
                 <button class="btn btn-primary mt-4" onclick="openCreateOrgModal()">Create Organization</button>
             </div>
         `;
@@ -77,17 +81,28 @@
       grid.innerHTML = orgs
         .map(
           (org) => `
-                <a href="/organizations/${org.id}/projects/" class="card card-hover">
-                    <div class="card-title">${org.name}</div>
-                    <div class="badge badge-neutral">Owner</div>
-                    <div class="mt-4 text-small text-muted">Manage projects & members &rarr;</div>
+                <a href="/organizations/${org.id}/projects/" class="card card-hover flex flex-col justify-between" style="min-height: 180px;">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="avatar-circle" style="width: 40px; height: 40px; font-size: 1rem;">
+                                ${org.name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <span class="badge badge-neutral">Owner</span>
+                        </div>
+                        <div class="card-title" style="font-size: 1.25rem;">${org.name}</div>
+                        <p class="text-small text-muted">Manage projects, members, and settings.</p>
+                    </div>
+                    
+                    <div class="flex items-center text-small text-muted" style="border-top: 1px solid var(--color-border); margin-top: 1rem; padding-top: 1rem;">
+                        <span style="color: var(--color-primary); font-weight: 500;">Enter Workspace &rarr;</span>
+                    </div>
                 </a>
             `,
         )
         .join("");
     } catch (error) {
       grid.innerHTML =
-        '<div class="alert alert-error">Failed to load organizations.</div>';
+        '<div class="alert alert-error">Failed to load organizations. Please refresh.</div>';
     }
   }
 

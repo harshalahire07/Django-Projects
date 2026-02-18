@@ -3,92 +3,165 @@
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.5rem;
-      "
-    >
-      <a id="back-link" href="#" class="btn btn-sm btn-secondary"
-        >&larr; Projects</a
+    <div class="flex items-center gap-2 mb-2">
+      <a
+        href="/dashboard/"
+        class="text-muted hover:text-primary transition-colors"
+        >Dashboard</a
       >
-      <h1 style="margin: 0">Organization Members</h1>
+      <span class="text-muted">/</span>
+      <a
+        id="back-link"
+        href="#"
+        class="text-muted hover:text-primary transition-colors"
+        >Projects</a
+      >
+      <span class="text-muted">/</span>
+      <span class="font-medium">Members</span>
     </div>
-    <p class="text-muted" style="margin-left: 0.5rem">
-      People with access to this organization
-    </p>
+    <h1>Team Members</h1>
+    <p class="text-muted">Manage access and roles</p>
+  </div>
+  <div id="admin-actions" style="display: none">
+    <button class="btn btn-primary" onclick="openInviteModal()">
+      <span>+</span> Invite Member
+    </button>
   </div>
 </div>
 
-<div class="table-container">
-  <table>
-    <thead>
-      <tr>
-        <th style="width: 50%">Email</th>
-        <th style="width: 20%">Role</th>
-        <th style="width: 30%">Joined</th>
-      </tr>
-    </thead>
-    <tbody id="members-body">
-      <tr>
-        <td colspan="3" class="text-center text-muted">Loading...</td>
-      </tr>
-    </tbody>
-  </table>
+<div id="members-grid" class="grid grid-cols-auto">
+  <div class="card">
+    <p class="text-muted">Loading members...</p>
+  </div>
+</div>
+
+<!-- Invite Modal -->
+<div id="invite-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Invite New Member</div>
+    </div>
+    <div class="form-group">
+      <label for="invite-email">User Email</label>
+      <input
+        type="email"
+        id="invite-email"
+        placeholder="colleague@company.com"
+      />
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeInviteModal()" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button onclick="inviteMember()" class="btn btn-primary">
+        Send Invite
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
+  let currentOrgId;
+
   document.addEventListener("DOMContentLoaded", async () => {
     const pathParts = window.location.pathname.split("/");
-    const orgId = pathParts[2]; // /organizations/{id}/members/
+    currentOrgId = pathParts[2]; // /organizations/{id}/members/
 
     document.getElementById("back-link").href =
-      `/organizations/${orgId}/projects/`;
+      `/organizations/${currentOrgId}/projects/`;
 
-    const tbody = document.getElementById("members-body");
+    const grid = document.getElementById("members-grid");
+
+    // Check Role
+    const token = localStorage.getItem("access_token");
+    if (!token) return logout();
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const currentUserId = payload.user_id;
 
     try {
-      const response = await fetch(`/api/organizations/${orgId}/members/`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      const response = await fetch(
+        `/api/organizations/${currentOrgId}/members/`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         },
-      });
+      );
 
-      if (response.status === 401) {
-        logout();
+      if (response.status === 401) return logout();
+      if (response.status === 403) {
+        grid.innerHTML =
+          '<div class="alert alert-error">Access Denied</div>';
         return;
       }
 
       const members = await response.json();
+      const me = members.find((m) => m.id == currentUserId);
 
-      if (members.length === 0) {
-        tbody.innerHTML =
-          '<tr><td colspan="3" class="text-center text-muted">No members found.</td></tr>';
-        return;
+      if (me && me.role === "ADMIN") {
+        document.getElementById("admin-actions").style.display = "block";
       }
 
-      tbody.innerHTML = members
+      grid.innerHTML = members
         .map(
           (m) => `
-            <tr>
-                <td>
-                    <div class="flex items-center gap-2">
-                         <div class="avatar-circle">${m.email[0].toUpperCase()}</div>
-                        <span class="font-medium">${m.email}</span>
+            <div class="card flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="avatar-circle">${m.email[0].toUpperCase()}</div>
+                    <div>
+                        <div class="font-medium">${m.email}</div>
+                        <div class="text-small text-muted">Joined ${new Date(m.date_joined).toLocaleDateString()}</div>
                     </div>
-                </td>
-                <td><span class="badge ${m.role === "ADMIN" ? "badge-primary" : "badge-neutral"}">${m.role}</span></td>
-                <td>${new Date(m.joined_at).toLocaleDateString()}</td>
-            </tr>
+                </div>
+                <div>
+                    <span class="badge ${m.role === "ADMIN" ? "badge-primary" : "badge-neutral"}">${m.role}</span>
+                </div>
+            </div>
         `,
         )
         .join("");
-    } catch (e) {
-      tbody.innerHTML =
-        '<tr><td colspan="3" class="alert-error">Error loading members.</td></tr>';
+    } catch (error) {
+      grid.innerHTML =
+        '<div class="alert alert-error">Failed to load members</div>';
     }
   });
+
+  function openInviteModal() {
+    document.getElementById("invite-modal").style.display = "block";
+    document.getElementById("invite-email").focus();
+  }
+
+  function closeInviteModal() {
+    document.getElementById("invite-modal").style.display = "none";
+    document.getElementById("invite-email").value = "";
+  }
+
+  async function inviteMember() {
+    const email = document.getElementById("invite-email").value;
+    if (!email) return alert("Email is required");
+
+    try {
+      const response = await fetch(
+        `/api/organizations/${currentOrgId}/add_member/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, role: "MEMBER" }),
+        },
+      );
+
+      if (response.ok) {
+        alert("Member added successfully!");
+        closeInviteModal();
+        location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.detail || "Failed to add member");
+      }
+    } catch (e) {
+      alert("Error adding member");
+    }
+  }
 </script>
 {% endblock %}

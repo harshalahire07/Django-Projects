@@ -2,8 +2,11 @@
 {% block title %}Login - Taskflow{% endblock %}
 {% block content %}
 <div class="auth-form-card">
-  <div class="card card-hover">
+  <div class="card card-hover" style="border-top: 4px solid var(--color-primary);">
     <div style="text-align: center; margin-bottom: 2rem">
+      <div class="avatar-circle" style="width: 48px; height: 48px; margin: 0 auto 1rem auto; font-size: 1.5rem; background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);">
+        🔐
+      </div>
       <h2 style="font-size: 1.75rem; margin-bottom: 0.5rem">Welcome back</h2>
       <p class="text-muted">Sign in to your account to continue</p>
     </div>
@@ -12,18 +15,20 @@
 
     <form id="login-form">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email Address</label>
         <input
           type="email"
           id="email"
           required
-          placeholder="Enter your email"
+          placeholder="name@company.com"
         />
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
-        <div style="text-align: right; margin-bottom: 0.25rem">
-          <!-- Could add Forgot Password link here later -->
+        <div class="flex justify-between items-center mb-2">
+          <label for="password" style="margin-bottom: 0">Password</label>
+          <a href="#" class="text-small text-muted hover:text-primary"
+            >Forgot?</a
+          >
         </div>
         <input
           type="password"
@@ -32,15 +37,15 @@
           placeholder="Enter your password"
         />
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+      <button type="submit" class="btn btn-primary btn-block">
+        Sign In &rarr;
+      </button>
     </form>
 
-    <div style="text-align: center; margin-top: 1.5rem">
+    <div style="text-align: center; margin-top: 2rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem;">
       <p class="text-small text-muted">
         Don't have an account?
-        <a
-          href="/register/"
-          style="color: var(--color-primary); font-weight: 500"
+        <a href="/register/" style="color: var(--color-primary); font-weight: 600"
           >Create an account</a
         >
       </p>
