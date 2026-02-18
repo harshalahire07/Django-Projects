@@ -1,31 +1,56 @@
 {% extends 'web/base.html' %}
 {% block title %}Tasks - Taskflow{% endblock %}
+
+{% block breadcrumb %}
+<a href="/dashboard/">Dashboard</a>
+<span class="separator">/</span>
+<a href="#" id="back-link">Projects</a>
+<span class="separator">/</span>
+<span class="current">Tasks</span>
+{% endblock %}
+
+{% block sidebar_extra %}
+<div class="sidebar-section-label">Organization</div>
+<a href="#" id="sidebar-projects" class="sidebar-link">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+  </svg>
+  Projects
+</a>
+<a href="#" id="sidebar-members" class="sidebar-link">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  </svg>
+  Members
+</a>
+
+<div class="sidebar-section-label">Current Project</div>
+<a href="#" class="sidebar-link active">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="9 11 12 14 22 4"></polyline>
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+  </svg>
+  Task Board
+</a>
+{% endblock %}
+
+{% block topbar_actions %}
+<div id="admin-actions" style="display: none;">
+  <button class="btn btn-primary btn-sm" onclick="openModal('create-modal')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Task
+  </button>
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
-    <div class="flex items-center gap-2 mb-2">
-      <a
-        href="/dashboard/"
-        class="text-muted hover:text-primary transition-colors"
-        >Dashboard</a
-      >
-      <span class="text-muted">/</span>
-      <a
-        id="back-link"
-        href="#"
-        class="text-muted hover:text-primary transition-colors"
-        >Projects</a
-      >
-      <span class="text-muted">/</span>
-      <span class="font-medium">Tasks</span>
-    </div>
-    <h1>Board</h1>
-    <p class="text-muted">Track assignments and progress</p>
-  </div>
-  <div id="admin-actions" style="display: none">
-    <button class="btn btn-primary" onclick="openCreateTaskModal()">
-      <span>+</span> New Task
-    </button>
+    <h1>Task Board</h1>
+    <p>Track assignments and progress</p>
   </div>
 </div>
 
@@ -35,20 +60,18 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 45%; padding-left: 2rem">Task</th>
-        <th style="width: 20%">Assigned To</th>
-        <th style="width: 15%">Status</th>
-        <th style="width: 20%; text-align: right; padding-right: 2rem">
-          Actions
-        </th>
+        <th style="width: 40%; padding-left: 1.5rem;">Task</th>
+        <th style="width: 20%;">Assigned To</th>
+        <th style="width: 15%;">Status</th>
+        <th style="width: 25%; text-align: right; padding-right: 1.5rem;">Actions</th>
       </tr>
     </thead>
     <tbody id="tasks-body">
       <tr>
-        <td colspan="4" class="text-center text-muted" style="padding: 3rem">
-          <span style="display: inline-block; animation: pulse 1.5s infinite"
-            >Loading tasks...</span
-          >
+        <td colspan="4" style="padding: 0;">
+          <div class="skeleton-table-row"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w-75" style="flex:1;margin-bottom:0;"></div></div>
+          <div class="skeleton-table-row"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w-50" style="flex:1;margin-bottom:0;"></div></div>
+          <div class="skeleton-table-row"><div class="skeleton skeleton-avatar"></div><div class="skeleton skeleton-line w-75" style="flex:1;margin-bottom:0;"></div></div>
         </td>
       </tr>
     </tbody>
@@ -60,31 +83,19 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">Create Task</div>
+      <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
     </div>
     <div class="form-group">
       <label for="new-task-title">Task Title</label>
-      <input
-        type="text"
-        id="new-task-title"
-        placeholder="What needs to be done?"
-      />
+      <input type="text" id="new-task-title" placeholder="What needs to be done?" />
     </div>
     <div class="form-group">
       <label for="new-task-desc">Description</label>
-      <textarea
-        id="new-task-desc"
-        placeholder="Add more details..."
-        rows="4"
-        style="resize: vertical"
-      ></textarea>
+      <textarea id="new-task-desc" placeholder="Add more details..." rows="4" style="resize: vertical;"></textarea>
     </div>
     <div class="modal-actions">
-      <button onclick="closeCreateTaskModal()" class="btn btn-secondary">
-        Cancel
-      </button>
-      <button onclick="createTask()" class="btn btn-primary">
-        Create Task
-      </button>
+      <button onclick="closeModal('create-modal')" class="btn btn-secondary">Cancel</button>
+      <button onclick="createTask()" class="btn btn-primary">Create Task</button>
     </div>
   </div>
 </div>
@@ -94,45 +105,34 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">Assign Task</div>
+      <button class="modal-close" onclick="closeModal('assign-modal')">&times;</button>
     </div>
-
     <div class="form-group">
       <label for="assign-select">Select Team Member</label>
       <select id="assign-select"></select>
     </div>
-
     <div class="modal-actions">
-      <button onclick="closeAssignModal()" class="btn btn-secondary">
-        Cancel
-      </button>
-      <button onclick="confirmAssign()" class="btn btn-primary">
-        Confirm Assignment
-      </button>
+      <button onclick="closeModal('assign-modal')" class="btn btn-secondary">Cancel</button>
+      <button onclick="confirmAssign()" class="btn btn-primary">Confirm Assignment</button>
     </div>
   </div>
 </div>
 
 <!-- Activity Modal -->
 <div id="activity-modal" class="modal-overlay">
-  <div class="modal-content" style="max-width: 600px">
+  <div class="modal-content" style="max-width: 580px;">
     <div class="modal-header">
       <div class="modal-title">Task History</div>
-      <button onclick="closeActivityModal()" class="btn btn-sm btn-secondary">
-        &times;
-      </button>
+      <button class="modal-close" onclick="closeModal('activity-modal')">&times;</button>
     </div>
-    <div style="max-height: 60vh; overflow-y: auto; padding-right: 0.5rem">
-      <ul id="activity-list" style="list-style: none; padding: 0"></ul>
+    <div style="max-height: 55vh; overflow-y: auto; padding-right: 0.25rem;">
+      <ul id="activity-list" style="list-style: none; padding: 0;"></ul>
     </div>
   </div>
 </div>
 
 <script>
-  let currentOrgId,
-    currentProjectId,
-    currentUserRole,
-    currentUserId,
-    usersList = [];
+  let currentOrgId, currentProjectId, currentUserRole, currentUserId, usersList = [];
   let taskToAssign = null;
 
   document.addEventListener("DOMContentLoaded", async () => {
@@ -140,35 +140,24 @@
     currentOrgId = pathParts[2];
     currentProjectId = pathParts[4];
 
-    document.getElementById("back-link").href =
-      `/organizations/${currentOrgId}/projects/`;
+    document.getElementById("back-link").href = `/organizations/${currentOrgId}/projects/`;
+    document.getElementById("sidebar-projects").href = `/organizations/${currentOrgId}/projects/`;
+    document.getElementById("sidebar-members").href = `/organizations/${currentOrgId}/members/`;
 
-    // 1. Get User ID from Token
     const token = localStorage.getItem("access_token");
-    if (!token) {
-      logout();
-      return;
-    }
+    if (!token) { logout(); return; }
     const payload = JSON.parse(atob(token.split(".")[1]));
     currentUserId = payload.user_id;
 
-    // 2. Fetch Members to determine Role & Build Logic
     await loadMembers();
-
-    // 3. Fetch Tasks
     await loadTasks();
   });
 
   async function loadMembers() {
     try {
-      const response = await fetch(
-        `/api/organizations/${currentOrgId}/members/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      );
+      const response = await fetch(`/api/organizations/${currentOrgId}/members/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+      });
       const members = await response.json();
       usersList = members;
 
@@ -187,93 +176,74 @@
   async function loadTasks() {
     const tbody = document.getElementById("tasks-body");
     try {
-      const response = await fetch(
-        `/api/tasks/${currentOrgId}/${currentProjectId}/list/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        },
-      );
+      const response = await fetch(`/api/tasks/${currentOrgId}/${currentProjectId}/list/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+      });
 
       if (!response.ok) throw await response.json();
-
       const tasks = await response.json();
 
       if (tasks.length === 0) {
-        tbody.innerHTML =
-          '<tr><td colspan="4" class="text-center text-muted" style="padding: 4rem;">No tasks found. Create one to get started.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="padding: 3.5rem;">
+          <div class="empty-icon" style="font-size:2rem;">📋</div>
+          <div class="font-medium mt-2" style="color:var(--color-text-main);">No tasks yet</div>
+          <div class="text-small text-muted mt-1">Create a task to start tracking work.</div>
+        </td></tr>`;
         return;
       }
 
-      tbody.innerHTML = tasks
-        .map((task) => {
-          const assigneeName = task.assigned_to
-            ? usersList.find((u) => u.id == task.assigned_to)?.email ||
-              "Unknown"
-            : null;
+      tbody.innerHTML = tasks.map((task) => {
+        const assigneeName = task.assigned_to
+          ? usersList.find((u) => u.id == task.assigned_to)?.email || "Unknown"
+          : null;
 
-          let actions = "";
+        let actions = '<div class="flex gap-2 justify-end">';
 
-          // Status Actions
-          const nextStatus = getNextStatus(task.status);
-          const canUpdateStatus =
-            (currentUserRole === "ADMIN" ||
-              task.assigned_to == currentUserId) &&
-            nextStatus;
+        const nextStatus = getNextStatus(task.status);
+        const canUpdateStatus = (currentUserRole === "ADMIN" || task.assigned_to == currentUserId) && nextStatus;
 
-          // Action Container
-          actions += '<div class="flex gap-2 justify-end">';
+        if (canUpdateStatus) {
+          actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-sm btn-secondary">Mark ${formatStatus(nextStatus)}</button>`;
+        }
 
-          if (canUpdateStatus) {
-            actions += `<button onclick="updateStatus('${task.id}', '${nextStatus}')" class="btn btn-sm btn-secondary">Mark ${formatStatus(nextStatus)}</button>`;
-          }
+        if (currentUserRole === "ADMIN") {
+          actions += `<button onclick="openAssignModal('${task.id}')" class="btn btn-sm btn-secondary">Assign</button>`;
+        }
 
-          // Assign Actions (Admin only)
-          if (currentUserRole === "ADMIN") {
-            actions += `<button onclick="openAssignModal('${task.id}')" class="btn btn-sm btn-secondary">Assign</button>`;
-          }
+        actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-sm btn-ghost" title="View History">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>`;
+        actions += "</div>";
 
-          actions += `<button onclick="openActivityModal('${task.id}')" class="btn btn-sm btn-secondary" title="View History">📜</button>`;
-          actions += "</div>";
-
-          return `
-                <tr>
-                    <td style="padding-left: 2rem;">
-                        <div class="font-medium" style="color: var(--color-text-main);">${task.title}</div>
-                        <div class="text-small text-muted line-clamp-1" style="margin-top: 0.25rem;">${task.description || ""}</div>
-                    </td>
-                    <td>
-                        <div class="flex items-center gap-2">
-                            ${
-                              task.assigned_to && assigneeName
-                                ? `<div class="avatar-circle" style="width: 24px; height: 24px; font-size: 0.7rem;">${assigneeName[0].toUpperCase()}</div>
-                                <span class="text-small font-medium">${assigneeName.split("@")[0]}</span>`
-                                : '<span class="badge badge-neutral text-xs">Unassigned</span>'
-                            }
-                        </div>
-                    </td>
-                    <td><span class="badge ${getStatusBadgeClass(task.status)}">${formatStatus(task.status)}</span></td>
-                    <td style="padding-right: 2rem;">${actions}</td>
-                </tr>
-                `;
-        })
-        .join("");
+        return `
+          <tr>
+            <td style="padding-left: 1.5rem;">
+              <div class="font-medium" style="color: var(--color-text-main);">${task.title}</div>
+              <div class="text-small text-muted line-clamp-1 mt-1">${task.description || ""}</div>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                ${task.assigned_to && assigneeName
+                  ? `<div class="avatar-circle avatar-sm">${assigneeName[0].toUpperCase()}</div>
+                     <span class="text-small font-medium">${assigneeName.split("@")[0]}</span>`
+                  : '<span class="badge badge-neutral"><span class="badge-dot"></span>Unassigned</span>'}
+              </div>
+            </td>
+            <td><span class="badge ${getStatusBadgeClass(task.status)}"><span class="badge-dot"></span>${formatStatus(task.status)}</span></td>
+            <td style="padding-right: 1.5rem;">${actions}</td>
+          </tr>`;
+      }).join("");
     } catch (error) {
-      tbody.innerHTML = `<tr><td colspan="4" class="alert-error text-center">Error: ${error.detail || "Failed to load"}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="alert-error text-center" style="padding:2rem;">Error: ${error.detail || "Failed to load"}</td></tr>`;
     }
   }
 
   function getStatusBadgeClass(status) {
     switch (status) {
-      case "TODO":
-        return "badge-todo";
-      case "IN_PROGRESS":
-        return "badge-warning";
-      case "DONE":
-        return "badge-success";
-      default:
-        return "badge-neutral";
+      case "TODO": return "badge-todo";
+      case "IN_PROGRESS": return "badge-warning";
+      case "DONE": return "badge-success";
+      default: return "badge-neutral";
     }
   }
 
@@ -285,7 +255,7 @@
 
   function formatStatus(status) {
     if (!status) return "";
-    return status.replace("_", " "); // TODO, IN PROGRESS
+    return status.replace("_", " ");
   }
 
   async function updateStatus(taskId, newStatus) {
@@ -300,27 +270,21 @@
       });
 
       if (response.ok) {
-        loadTasks(); // Reload
+        showToast(`Task marked as ${formatStatus(newStatus)}`, "success");
+        loadTasks();
       } else {
-        alert("Failed to update status");
+        showToast("Failed to update status", "error");
       }
     } catch (e) {
-      alert("Error updating status");
+      showToast("Error updating status", "error");
     }
   }
 
   function openAssignModal(taskId) {
     taskToAssign = taskId;
     const select = document.getElementById("assign-select");
-    select.innerHTML = usersList
-      .map((u) => `<option value="${u.id}">${u.email} (${u.role})</option>`)
-      .join("");
-    document.getElementById("assign-modal").style.display = "block";
-  }
-
-  function closeAssignModal() {
-    document.getElementById("assign-modal").style.display = "none";
-    taskToAssign = null;
+    select.innerHTML = usersList.map((u) => `<option value="${u.id}">${u.email} (${u.role})</option>`).join("");
+    openModal("assign-modal");
   }
 
   async function confirmAssign() {
@@ -328,118 +292,88 @@
     if (!userId || !taskToAssign) return;
 
     try {
-      const response = await fetch(
-        `/api/tasks/${currentOrgId}/${taskToAssign}/assign/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ assigned_to: userId }),
+      const response = await fetch(`/api/tasks/${currentOrgId}/${taskToAssign}/assign/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ assigned_to: userId }),
+      });
 
       if (response.ok) {
-        closeAssignModal();
+        closeModal("assign-modal");
+        showToast("Task assigned successfully!", "success");
         loadTasks();
       } else {
         const data = await response.json();
-        alert(data.detail || "Assignment failed");
+        showToast(data.detail || "Assignment failed", "error");
       }
     } catch (e) {
-      alert("Error assigning task");
+      showToast("Error assigning task", "error");
     }
   }
 
-  // Activity Modal Logic
   async function openActivityModal(taskId) {
-    document.getElementById("activity-modal").style.display = "block";
+    openModal("activity-modal");
     const list = document.getElementById("activity-list");
-    list.innerHTML =
-      '<li class="text-center text-muted py-4">Loading history...</li>';
+    list.innerHTML = '<li class="text-center text-muted py-4">Loading history...</li>';
 
     try {
       const response = await fetch(`/api/tasks/${taskId}/activity/`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
       const activities = await response.json();
 
       if (activities.length === 0) {
-        list.innerHTML =
-          '<li class="text-center text-muted py-4">No activity recorded.</li>';
+        list.innerHTML = '<li class="text-center text-muted py-4">No activity recorded.</li>';
         return;
       }
 
-      list.innerHTML = activities
-        .map(
-          (a) => `
-              <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border);">
-                  <div class="flex justify-between items-center mb-1">
-                    <span class="text-xs text-muted font-medium">${new Date(a.created_at).toLocaleString()}</span>
-                    <span class="badge badge-neutral" style="font-size: 0.65rem;">${a.activity_type}</span>
-                  </div>
-                  <div class="text-sm my-1">${a.message}</div>
-                  <div class="flex items-center gap-2 mt-2">
-                       <div class="avatar-circle" style="width: 20px; height: 20px; font-size: 0.6rem;">${(a.actor_email || "U")[0].toUpperCase()}</div>
-                       <span class="text-xs text-muted">By: ${a.actor_email || "Unknown"}</span>
-                  </div>
-              </li>
-          `,
-        )
-        .join("");
+      list.innerHTML = activities.map((a) => `
+        <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border-light);">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs text-faint font-medium">${new Date(a.created_at).toLocaleString()}</span>
+            <span class="badge badge-neutral" style="font-size: 0.6rem;">${a.activity_type}</span>
+          </div>
+          <div class="text-small mt-1" style="color: var(--color-text-secondary);">${a.message}</div>
+          <div class="flex items-center gap-2 mt-2">
+            <div class="avatar-circle avatar-sm">${(a.actor_email || "U")[0].toUpperCase()}</div>
+            <span class="text-xs text-muted">By: ${a.actor_email || "Unknown"}</span>
+          </div>
+        </li>
+      `).join("");
     } catch (e) {
-      list.innerHTML =
-        '<li class="alert alert-error">Failed to load activity.</li>';
+      list.innerHTML = '<li class="alert alert-error">Failed to load activity.</li>';
     }
-  }
-
-  function closeActivityModal() {
-    document.getElementById("activity-modal").style.display = "none";
-  }
-
-  // Create Task Logic
-  function openCreateTaskModal() {
-    document.getElementById("create-modal").style.display = "block";
-    document.getElementById("new-task-title").focus();
-  }
-
-  function closeCreateTaskModal() {
-    document.getElementById("create-modal").style.display = "none";
-    document.getElementById("new-task-title").value = "";
-    document.getElementById("new-task-desc").value = "";
   }
 
   async function createTask() {
     const title = document.getElementById("new-task-title").value;
     const description = document.getElementById("new-task-desc").value;
 
-    if (!title) return alert("Title is required");
+    if (!title) return showToast("Task title is required", "warning");
 
     try {
-      const response = await fetch(
-        `/api/tasks/${currentOrgId}/${currentProjectId}/create/`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title, description }),
+      const response = await fetch(`/api/tasks/${currentOrgId}/${currentProjectId}/create/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ title, description }),
+      });
 
       if (response.ok) {
-        closeCreateTaskModal();
+        closeModal("create-modal");
+        showToast("Task created successfully!", "success");
         loadTasks();
       } else {
         const data = await response.json();
-        alert(data.detail || "Failed to create task");
+        showToast(data.detail || "Failed to create task", "error");
       }
     } catch (e) {
-      alert("Error creating task");
+      showToast("Error creating task", "error");
     }
   }
 </script>

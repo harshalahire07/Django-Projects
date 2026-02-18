@@ -1,21 +1,31 @@
 {% extends 'web/base.html' %}
 {% block title %}Dashboard - Taskflow{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block breadcrumb %}
+<span class="current">Dashboard</span>
+{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" onclick="openModal('create-modal')">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  New Organization
+</button>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
   <div class="page-title-group">
     <h1>My Organizations</h1>
-    <p class="text-muted">Select an organization to manage projects and teams</p>
+    <p>Select an organization to manage projects and teams</p>
   </div>
-  <button class="btn btn-primary" onclick="openCreateOrgModal()">
-    <span>+</span> New Organization
-  </button>
 </div>
 
 <div id="org-grid" class="grid grid-cols-auto">
-  <!-- Organizations will be loaded here -->
-  <div class="card">
-      <p class="text-muted">Loading organizations...</p>
-  </div>
+  <!-- Skeleton loading -->
+  <div class="card skeleton skeleton-card"></div>
+  <div class="card skeleton skeleton-card"></div>
+  <div class="card skeleton skeleton-card"></div>
 </div>
 
 <!-- Create Org Modal -->
@@ -23,22 +33,17 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">Create Organization</div>
+      <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
     </div>
-    
+
     <div class="form-group">
-        <label for="new-org-name">Organization Name</label>
-        <input
-        type="text"
-        id="new-org-name"
-        placeholder="e.g. Acme Corp"
-        />
-        <p class="text-xs text-muted mt-2">This will be your workspace name.</p>
+      <label for="new-org-name">Organization Name</label>
+      <input type="text" id="new-org-name" placeholder="e.g. Acme Corp" />
+      <p class="form-hint mt-1">This will be your workspace name.</p>
     </div>
 
     <div class="modal-actions">
-      <button onclick="closeCreateOrgModal()" class="btn btn-secondary">
-        Cancel
-      </button>
+      <button onclick="closeModal('create-modal')" class="btn btn-secondary">Cancel</button>
       <button onclick="createOrg()" class="btn btn-primary">Create Organization</button>
     </div>
   </div>
@@ -54,71 +59,49 @@
     const grid = document.getElementById("org-grid");
     try {
       const response = await fetch("/api/organizations/mine/", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
-      if (response.status === 401) {
-        logout();
-        return;
-      }
-
+      if (response.status === 401) { logout(); return; }
       const orgs = await response.json();
 
       if (orgs.length === 0) {
         grid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1/-1;">
-                <div class="empty-icon">🏢</div>
-                <h3>No Organizations Yet</h3>
-                <p>Create your first organization to start managing projects and tasks.</p>
-                <button class="btn btn-primary mt-4" onclick="openCreateOrgModal()">Create Organization</button>
-            </div>
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <div class="empty-icon">🏢</div>
+            <h3>No Organizations Yet</h3>
+            <p>Create your first organization to start managing projects and tasks.</p>
+            <button class="btn btn-primary mt-4" onclick="openModal('create-modal')">Create Organization</button>
+          </div>
         `;
         return;
       }
 
-      grid.innerHTML = orgs
-        .map(
-          (org) => `
-                <a href="/organizations/${org.id}/projects/" class="card card-hover flex flex-col justify-between" style="min-height: 180px;">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="avatar-circle" style="width: 40px; height: 40px; font-size: 1rem;">
-                                ${org.name.substring(0, 2).toUpperCase()}
-                            </div>
-                            <span class="badge badge-neutral">Owner</span>
-                        </div>
-                        <div class="card-title" style="font-size: 1.25rem;">${org.name}</div>
-                        <p class="text-small text-muted">Manage projects, members, and settings.</p>
-                    </div>
-                    
-                    <div class="flex items-center text-small text-muted" style="border-top: 1px solid var(--color-border); margin-top: 1rem; padding-top: 1rem;">
-                        <span style="color: var(--color-primary); font-weight: 500;">Enter Workspace &rarr;</span>
-                    </div>
-                </a>
-            `,
-        )
-        .join("");
+      grid.innerHTML = orgs.map((org) => `
+        <a href="/organizations/${org.id}/projects/" class="card card-hover flex flex-col justify-between" style="min-height: 170px;">
+          <div class="card-body">
+            <div class="flex justify-between items-start mb-3">
+              <div class="avatar-circle avatar-lg" style="font-size: 0.875rem;">
+                ${org.name.substring(0, 2).toUpperCase()}
+              </div>
+              <span class="badge badge-primary"><span class="badge-dot"></span>Owner</span>
+            </div>
+            <div class="card-title" style="font-size: 1.125rem;">${org.name}</div>
+            <p class="text-small text-muted" style="margin-bottom: 0;">Manage projects, members, and settings.</p>
+          </div>
+          <div class="card-footer flex items-center">
+            <span class="text-small font-medium text-primary">Enter Workspace →</span>
+          </div>
+        </a>
+      `).join("");
     } catch (error) {
-      grid.innerHTML =
-        '<div class="alert alert-error">Failed to load organizations. Please refresh.</div>';
+      grid.innerHTML = '<div class="alert alert-error">Failed to load organizations. Please refresh.</div>';
     }
-  }
-
-  function openCreateOrgModal() {
-    document.getElementById("create-modal").style.display = "block";
-    document.getElementById("new-org-name").focus();
-  }
-
-  function closeCreateOrgModal() {
-    document.getElementById("create-modal").style.display = "none";
-    document.getElementById("new-org-name").value = "";
   }
 
   async function createOrg() {
     const name = document.getElementById("new-org-name").value;
-    if (!name) return alert("Name is required");
+    if (!name) return showToast("Organization name is required", "warning");
 
     try {
       const response = await fetch("/api/organizations/create/", {
@@ -131,14 +114,15 @@
       });
 
       if (response.ok) {
-        closeCreateOrgModal();
+        closeModal("create-modal");
+        showToast("Organization created successfully!", "success");
         loadOrgs();
       } else {
         const data = await response.json();
-        alert(data.name || "Failed to create organization");
+        showToast(data.name || "Failed to create organization", "error");
       }
     } catch (e) {
-      alert("Error creating organization");
+      showToast("Error creating organization", "error");
     }
   }
 </script>
