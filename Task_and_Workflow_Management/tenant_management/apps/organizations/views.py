@@ -4,6 +4,7 @@ from rest_framework import status, permissions
 
 from .models import Organization, OrganizationMember
 from .serializers import OrganizationSerializer
+from apps.audit.models import AuditLog
 # Create your views here.
 class CreateOrganizationAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -20,7 +21,14 @@ class CreateOrganizationAPIView(APIView):
             OrganizationMember.objects.create(
                 user=request.user,
                 organization=organization,
-                role="ADMIN"
+                role=OrganizationMember.ADMIN,   # integer 4
+            )
+            
+            AuditLog.objects.create(
+                actor=request.user,
+                action="ORG_CREATED",
+                description=f"Organization '{organization.name}' created.",
+                organization_id=organization.id,
             )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -65,3 +73,72 @@ class OrganizationMembersAPIView(APIView):
         ]
 
         return Response(data)
+
+
+class AddMemberAPIView(APIView):
+    """
+    POST /api/organizations/<org_id>/add_member/
+    Admin-only: add an existing user to this organization as MEMBER.
+    Body: { "email": "user@example.com" }
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, org_id):
+        # Only admins (role >= 4) can invite members
+        is_admin = OrganizationMember.objects.filter(
+            user=request.user,
+            organization_id=org_id,
+            role__gte=OrganizationMember.ADMIN,
+        ).exists()
+
+        if not is_admin:
+            return Response(
+                {"detail": "Only admins can add members"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        email = request.data.get("email", "").strip()
+        if not email:
+            return Response(
+                {"detail": "Email is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        from apps.accounts.models import User as AppUser
+        try:
+            user_to_add = AppUser.objects.get(email=email)
+        except AppUser.DoesNotExist:
+            return Response(
+                {"detail": f"No user found with email '{email}'"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            org = Organization.objects.get(id=org_id)
+        except Organization.DoesNotExist:
+            return Response({"detail": "Organization not found"}, status=404)
+
+        # Prevent duplicate membership
+        if OrganizationMember.objects.filter(user=user_to_add, organization=org).exists():
+            return Response(
+                {"detail": "User is already a member of this organization"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        OrganizationMember.objects.create(
+            user=user_to_add,
+            organization=org,
+            role=OrganizationMember.MEMBER,  # integer 1
+        )
+        
+        AuditLog.objects.create(
+            actor=request.user,
+            action="MEMBER_ADDED",
+            description=f"User '{user_to_add.email}' was added as Member.",
+            organization_id=org.id,
+        )
+
+        return Response(
+            {"detail": f"{email} added to organization as Member"},
+            status=status.HTTP_201_CREATED
+        )

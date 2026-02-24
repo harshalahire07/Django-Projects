@@ -30,6 +30,13 @@ class CreateTaskAPIView(APIView):
 
         task = serializer.save(project_id=project_id)
 
+        AuditLog.objects.create(
+            actor=request.user,
+            action="TASK_CREATED",
+            description=f"Task '{task.title}' created in project.",
+            organization_id=org_id,
+        )
+
         return Response(
             TaskSerializer(task).data,
             status=status.HTTP_201_CREATED
@@ -67,11 +74,11 @@ class AssignTaskAPIView(APIView):
 
     def post(self, request, org_id, task_id):
         try:
-            # 1) Verify ADMIN of the organization
+            # 1) Verify ADMIN (or above) of the organization
             is_admin = OrganizationMember.objects.filter(
                 user=request.user,
                 organization_id=org_id,
-                role="ADMIN"
+                role__gte=OrganizationMember.ADMIN,   # integer 4
             ).exists()
 
             if not is_admin:
@@ -185,11 +192,11 @@ class UpdateTaskStatusAPIView(APIView):
                 status=400
             )
 
-        #  Permission rule: only assigned user OR admin
+        #  Permission rule: only assigned user OR admin (or above)
         is_admin = OrganizationMember.objects.filter(
             user=request.user,
             organization_id=org_id,
-            role="ADMIN"
+            role__gte=OrganizationMember.ADMIN,   # integer 4
         ).exists()
 
         if not is_admin and task.assigned_to != request.user:

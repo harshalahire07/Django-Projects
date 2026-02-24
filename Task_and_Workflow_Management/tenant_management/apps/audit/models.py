@@ -7,6 +7,10 @@ class AuditLog(models.Model):
         ("TASK_ASSIGNED", "Task Assigned"),
         ("TASK_REASSIGNED", "Task Reassigned"),
         ("STATUS_CHANGED", "Status Changed"),
+        ("ORG_CREATED", "Organization Created"),
+        ("PROJECT_CREATED", "Project Created"),
+        ("TASK_CREATED", "Task Created"),
+        ("MEMBER_ADDED", "Member Added"),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

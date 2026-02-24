@@ -6,6 +6,7 @@ from .models import Project
 from .serializers import ProjectSerializer
 from apps.organizations.models import OrganizationMember
 from apps.organizations.permissions import IsOrganizationAdmin
+from apps.audit.models import AuditLog
 # Create your views here.
 class CreateProjectAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOrganizationAdmin]
@@ -15,6 +16,13 @@ class CreateProjectAPIView(APIView):
         serializer.is_valid(raise_exception=True)
 
         project = serializer.save(organization_id=org_id)
+
+        AuditLog.objects.create(
+            actor=request.user,
+            action="PROJECT_CREATED",
+            description=f"Project '{project.name}' created.",
+            organization_id=org_id,
+        )
 
         return Response(
             ProjectSerializer(project).data,

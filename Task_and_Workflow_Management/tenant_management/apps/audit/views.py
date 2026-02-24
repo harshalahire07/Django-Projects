@@ -14,7 +14,7 @@ class AuditLogListAPIView(APIView):
         is_admin = OrganizationMember.objects.filter(
             user=request.user,
             organization_id=org_id,
-            role="ADMIN"
+            role__gte=OrganizationMember.ADMIN,   # integer 4
         ).exists()
 
         if not is_admin:

@@ -1,22 +1,38 @@
-{% extends 'web/base.html' %}
-{% block title %}Projects - Taskflow{% endblock %}
-
+{% extends 'web/base.html' %} {% block title %}Projects - Taskflow{% endblock %}
 {% block breadcrumb %}
 <a href="/dashboard/">Dashboard</a>
 <span class="separator">/</span>
 <span class="current">Projects</span>
-{% endblock %}
-
-{% block sidebar_extra %}
+{% endblock %} {% block sidebar_extra %}
 <div class="sidebar-section-label">Organization</div>
 <a href="#" id="sidebar-projects" class="sidebar-link active">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+    ></path>
   </svg>
   Projects
 </a>
 <a href="#" id="sidebar-members" class="sidebar-link">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
     <circle cx="9" cy="7" r="4"></circle>
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -24,8 +40,17 @@
   </svg>
   Members
 </a>
-<a href="#" id="sidebar-audit" class="sidebar-link" style="display: none;">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<a href="#" id="sidebar-audit" class="sidebar-link" style="display: none">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
     <polyline points="14 2 14 8 20 8"></polyline>
     <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -33,16 +58,27 @@
   </svg>
   Audit Logs
 </a>
-{% endblock %}
-
-{% block topbar_actions %}
-<button class="btn btn-primary btn-sm" id="create-project-btn" style="display: none;" onclick="openModal('create-modal')">
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+{% endblock %} {% block topbar_actions %}
+<button
+  class="btn btn-primary btn-sm"
+  id="create-project-btn"
+  style="display: none"
+  onclick="openModal('create-modal')"
+>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+  >
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
   New Project
 </button>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <div class="page-header">
   <div class="page-title-group">
     <h1>Projects</h1>
@@ -60,22 +96,37 @@
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">Create New Project</div>
-      <button class="modal-close" onclick="closeModal('create-modal')">&times;</button>
+      <button class="modal-close" onclick="closeModal('create-modal')">
+        &times;
+      </button>
     </div>
 
     <div class="form-group">
       <label for="new-proj-name">Project Name</label>
-      <input type="text" id="new-proj-name" placeholder="e.g. Q4 Marketing Campaign" />
+      <input
+        type="text"
+        id="new-proj-name"
+        placeholder="e.g. Q4 Marketing Campaign"
+      />
     </div>
 
     <div class="form-group">
       <label for="new-proj-desc">Description (Optional)</label>
-      <textarea id="new-proj-desc" placeholder="What is this project about?" rows="3" style="resize: vertical;"></textarea>
+      <textarea
+        id="new-proj-desc"
+        placeholder="What is this project about?"
+        rows="3"
+        style="resize: vertical"
+      ></textarea>
     </div>
 
     <div class="modal-actions">
-      <button onclick="closeModal('create-modal')" class="btn btn-secondary">Cancel</button>
-      <button onclick="createProject()" class="btn btn-primary">Create Project</button>
+      <button onclick="closeModal('create-modal')" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button onclick="createProject()" class="btn btn-primary">
+        Create Project
+      </button>
     </div>
   </div>
 </div>
@@ -87,9 +138,12 @@
     const pathParts = window.location.pathname.split("/");
     currentOrgId = pathParts[2];
 
-    document.getElementById("sidebar-members").href = `/organizations/${currentOrgId}/members/`;
-    document.getElementById("sidebar-audit").href = `/organizations/${currentOrgId}/audit/`;
-    document.getElementById("sidebar-projects").href = `/organizations/${currentOrgId}/projects/`;
+    document.getElementById("sidebar-members").href =
+      `/organizations/${currentOrgId}/members/`;
+    document.getElementById("sidebar-audit").href =
+      `/organizations/${currentOrgId}/audit/`;
+    document.getElementById("sidebar-projects").href =
+      `/organizations/${currentOrgId}/projects/`;
 
     checkRole();
 
@@ -97,12 +151,18 @@
 
     try {
       const response = await fetch(`/api/projects/${currentOrgId}/list/`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
       });
 
-      if (response.status === 401) { logout(); return; }
+      if (response.status === 401) {
+        logout();
+        return;
+      }
       if (response.status === 403) {
-        grid.innerHTML = '<div class="alert alert-error">Access denied. You do not have permission to view this organization.</div>';
+        grid.innerHTML =
+          '<div class="alert alert-error">Access denied. You do not have permission to view this organization.</div>';
         return;
       }
 
@@ -122,7 +182,9 @@
         return;
       }
 
-      grid.innerHTML = projects.map((p) => `
+      grid.innerHTML = projects
+        .map(
+          (p) => `
         <a href="/organizations/${currentOrgId}/projects/${p.id}/tasks/" class="card card-hover flex flex-col justify-between" style="min-height: 180px;">
           <div class="card-body">
             <div class="card-title" style="font-size: 1.075rem;">${p.name}</div>
@@ -135,10 +197,13 @@
             <span class="text-xs text-faint">Open →</span>
           </div>
         </a>
-      `).join("");
+      `,
+        )
+        .join("");
     } catch (error) {
       console.error(error);
-      grid.innerHTML = '<div class="alert alert-error">Error loading projects. Please try refreshing.</div>';
+      grid.innerHTML =
+        '<div class="alert alert-error">Error loading projects. Please try refreshing.</div>';
     }
   });
 
@@ -148,14 +213,19 @@
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userId = payload.user_id;
 
-      const response = await fetch(`/api/organizations/${currentOrgId}/members/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `/api/organizations/${currentOrgId}/members/`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const members = await response.json();
       const me = members.find((m) => m.id == userId);
 
-      if (me && me.role === "ADMIN") {
-        document.getElementById("create-project-btn").style.display = "inline-flex";
+      if (me && me.role >= 4) {
+        // 4 = ADMIN
+        document.getElementById("create-project-btn").style.display =
+          "inline-flex";
         document.getElementById("sidebar-audit").style.display = "flex";
         const emptyAction = document.getElementById("empty-state-action");
         if (emptyAction) emptyAction.style.display = "block";
