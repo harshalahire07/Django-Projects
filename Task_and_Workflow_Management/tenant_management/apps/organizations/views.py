@@ -172,7 +172,7 @@ class TeamListCreateAPIView(APIView):
         
         AuditLog.objects.create(
             actor=request.user,
-            action="ORG_CREATED", # Custom action perhaps later, for now we can just log
+            action="TEAM_CREATED",
             description=f"Team '{team.name}' created.",
             organization_id=org_id,
         )

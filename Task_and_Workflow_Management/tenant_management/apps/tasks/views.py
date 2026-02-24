@@ -63,7 +63,7 @@ class ProjectTasksAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        tasks = enforce_organization_isolation(Task.objects.all(), org_id).filter(project_id=project_id)
+        tasks = enforce_organization_isolation(Task.objects.all(), org_id, user=request.user).filter(project_id=project_id)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -82,15 +82,9 @@ class AssignTaskAPIView(APIView):
 
             # 2) Load task and ensure it belongs to the org via project
             try:
-                task = Task.objects.select_related("project").get(id=task_id)
+                task = enforce_organization_isolation(Task.objects.select_related("project"), org_id, user=request.user).get(id=task_id)
             except Task.DoesNotExist:
                 return Response({"detail": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            if str(task.project.organization_id) != str(org_id):
-                return Response(
-                    {"detail": "Task does not belong to this organization"},
-                    status=status.HTTP_403_FORBIDDEN
-                )
 
             # 3) Validate assignee
             serializer = TaskAssignSerializer(data=request.data)
@@ -150,14 +144,14 @@ class UpdateTaskStatusAPIView(APIView):
     def patch(self, request, task_id):
         #  Load task
         try:
-            task = Task.objects.select_related("project").get(id=task_id)
+            # First fetch the task to get its project's organization_id since it's not in the URL
+            task_probe = Task.objects.select_related("project").get(id=task_id)
+            org_id = task_probe.project.organization_id
+            
+            # Now fetch the task with strict isolation rules
+            task = enforce_organization_isolation(Task.objects.all(), org_id, user=request.user).get(id=task_id)
         except Task.DoesNotExist:
-            return Response({"detail": "Task not found"}, status=404)
-
-        org_id = task.project.organization_id
-
-        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
-            return Response({"detail": "Access denied"}, status=403)
+            return Response({"detail": "Task not found or access denied"}, status=404)
 
         #  Validate request payload
         serializer = TaskStatusUpdateSerializer(data=request.data)
@@ -167,20 +161,11 @@ class UpdateTaskStatusAPIView(APIView):
         current_status = task.status
         allowed_next = ALLOWED_STATUS_TRANSITIONS[current_status]
 
-        #  Enforce workflow rules (for everyone)
+        # Workflow rules enforcement
         if new_status not in allowed_next:
             return Response(
                 {"detail": f"Invalid transition from {current_status} to {new_status}"},
                 status=400
-            )
-
-        #  Permission rule: only assigned user OR admin (or above)
-        is_admin = has_permission(request.user, org_id, OrganizationMember.ADMIN)
-
-        if not is_admin and task.assigned_to != request.user:
-            return Response(
-                {"detail": "Only assigned user can update status"},
-                status=403
             )
 
         # Update status
@@ -208,14 +193,12 @@ class TaskActivityListAPIView(APIView):
 
     def get(self, request, task_id):
         try:
-            task = Task.objects.select_related("project").get(id=task_id)
+            task_probe = Task.objects.select_related("project").get(id=task_id)
+            org_id = task_probe.project.organization_id
+
+            task = enforce_organization_isolation(Task.objects.all(), org_id, user=request.user).get(id=task_id)
         except Task.DoesNotExist:
-            return Response({"detail": "Task not found"}, status=404)
-
-        org_id = task.project.organization_id
-
-        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
-            return Response({"detail": "Access denied"}, status=403)
+            return Response({"detail": "Task not found or access denied"}, status=404)
 
         activities = task.activities.order_by("-created_at")
         serializer = TaskActivitySerializer(activities, many=True)

@@ -249,7 +249,7 @@
             ${
               isAdmin
                 ? `
-              <select onchange="assignTeam('${m.id}', this.value)" class="text-xs" style="padding: 2px 4px; border-radius: 4px; background: transparent; border: 1px solid var(--border-subtle);">
+              <select onchange="assignTeam('${m.id}', this.value)" class="text-xs" style="padding: 2px 4px; border-radius: 4px; background: transparent; border: 1px solid var(--border-subtle); min-width: 100px; max-width: 150px; text-overflow: ellipsis;">
                 ${teams.map((t) => `<option value="${t.id}" ${m.team && m.team.id === t.id ? "selected" : ""}>${t.name}</option>`).join("")}
               </select>
             `
