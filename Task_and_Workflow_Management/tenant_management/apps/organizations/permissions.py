@@ -1,5 +1,6 @@
 from rest_framework.permissions import BasePermission
 from apps.organizations.models import OrganizationMember
+from apps.organizations.rbac_service import has_permission as rbac_has_permission
 
 
 class IsOrganizationAdmin(BasePermission):
@@ -12,11 +13,7 @@ class IsOrganizationAdmin(BasePermission):
         if not org_id or not request.user.is_authenticated:
             return False
 
-        return OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id,
-            role__gte=OrganizationMember.ADMIN,
-        ).exists()
+        return rbac_has_permission(request.user, org_id, OrganizationMember.ADMIN)
 
 
 class IsOrganizationManager(BasePermission):
@@ -29,11 +26,7 @@ class IsOrganizationManager(BasePermission):
         if not org_id or not request.user.is_authenticated:
             return False
 
-        return OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id,
-            role__gte=OrganizationMember.MANAGER,
-        ).exists()
+        return rbac_has_permission(request.user, org_id, OrganizationMember.MANAGER)
 
 
 class IsOrganizationProjectManager(BasePermission):
@@ -46,8 +39,4 @@ class IsOrganizationProjectManager(BasePermission):
         if not org_id or not request.user.is_authenticated:
             return False
 
-        return OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id,
-            role__gte=OrganizationMember.PROJECT_MANAGER,
-        ).exists()
+        return rbac_has_permission(request.user, org_id, OrganizationMember.PROJECT_MANAGER)

@@ -5,6 +5,7 @@ from rest_framework import status, permissions
 from .models import Organization, OrganizationMember
 from .serializers import OrganizationSerializer
 from apps.audit.models import AuditLog
+from apps.organizations.rbac_service import has_permission
 # Create your views here.
 class CreateOrganizationAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -46,13 +47,7 @@ class OrganizationMembersAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, org_id):
-        # Ensure requesting user belongs to the organization
-        is_member = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id
-        ).exists()
-
-        if not is_member:
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
             return Response(
                 {"detail": "Access denied"},
                 status=403
@@ -85,13 +80,7 @@ class AddMemberAPIView(APIView):
 
     def post(self, request, org_id):
         # Only admins (role >= 4) can invite members
-        is_admin = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id,
-            role__gte=OrganizationMember.ADMIN,
-        ).exists()
-
-        if not is_admin:
+        if not has_permission(request.user, org_id, OrganizationMember.ADMIN):
             return Response(
                 {"detail": "Only admins can add members"},
                 status=status.HTTP_403_FORBIDDEN

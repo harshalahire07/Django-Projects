@@ -7,6 +7,10 @@ from .models import Task ,TaskActivity
 from .serializers import TaskSerializer
 from apps.projects.models import Project
 from apps.organizations.permissions import IsOrganizationAdmin
+from apps.organizations.rbac_service import (
+    has_permission, 
+    enforce_organization_isolation,
+)
 from apps.audit.models import AuditLog
 from .serializers import TaskStatusUpdateSerializer
 ALLOWED_STATUS_TRANSITIONS = {
@@ -46,12 +50,7 @@ class ProjectTasksAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, org_id, project_id):
-        is_member = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id
-        ).exists()
-
-        if not is_member:
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
             return Response(
                 {"detail": "Access denied"},
                 status=status.HTTP_403_FORBIDDEN
@@ -64,7 +63,7 @@ class ProjectTasksAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        tasks = Task.objects.filter(project_id=project_id)
+        tasks = enforce_organization_isolation(Task.objects.all(), org_id).filter(project_id=project_id)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -75,13 +74,7 @@ class AssignTaskAPIView(APIView):
     def post(self, request, org_id, task_id):
         try:
             # 1) Verify ADMIN (or above) of the organization
-            is_admin = OrganizationMember.objects.filter(
-                user=request.user,
-                organization_id=org_id,
-                role__gte=OrganizationMember.ADMIN,   # integer 4
-            ).exists()
-
-            if not is_admin:
+            if not has_permission(request.user, org_id, OrganizationMember.ADMIN):
                 return Response(
                     {"detail": "Only organization admins can assign tasks"},
                     status=status.HTTP_403_FORBIDDEN
@@ -105,12 +98,7 @@ class AssignTaskAPIView(APIView):
             assignee = serializer.validated_data["assigned_to"]
 
             # 4) Ensure assignee is a member of the same organization
-            is_member = OrganizationMember.objects.filter(
-                user=assignee,
-                organization_id=org_id
-            ).exists()
-
-            if not is_member:
+            if not has_permission(assignee, org_id, OrganizationMember.MEMBER):
                 return Response(
                     {"detail": "Assignee is not a member of this organization"},
                     status=status.HTTP_400_BAD_REQUEST
@@ -168,13 +156,7 @@ class UpdateTaskStatusAPIView(APIView):
 
         org_id = task.project.organization_id
 
-        #  Check organization membership
-        is_member = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id
-        ).exists()
-
-        if not is_member:
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
             return Response({"detail": "Access denied"}, status=403)
 
         #  Validate request payload
@@ -193,11 +175,7 @@ class UpdateTaskStatusAPIView(APIView):
             )
 
         #  Permission rule: only assigned user OR admin (or above)
-        is_admin = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id,
-            role__gte=OrganizationMember.ADMIN,   # integer 4
-        ).exists()
+        is_admin = has_permission(request.user, org_id, OrganizationMember.ADMIN)
 
         if not is_admin and task.assigned_to != request.user:
             return Response(
@@ -236,13 +214,7 @@ class TaskActivityListAPIView(APIView):
 
         org_id = task.project.organization_id
 
-        # Check org membership
-        is_member = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id
-        ).exists()
-
-        if not is_member:
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
             return Response({"detail": "Access denied"}, status=403)
 
         activities = task.activities.order_by("-created_at")

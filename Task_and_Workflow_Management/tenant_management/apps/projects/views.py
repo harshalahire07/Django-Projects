@@ -7,7 +7,7 @@ from .serializers import ProjectSerializer
 from apps.organizations.models import OrganizationMember
 from apps.organizations.permissions import IsOrganizationAdmin
 from apps.audit.models import AuditLog
-# Create your views here.
+from apps.organizations.rbac_service import has_permission, enforce_organization_isolation
 class CreateProjectAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOrganizationAdmin]
 
@@ -33,17 +33,12 @@ class OrganizationProjectsAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, org_id):
-        is_member = OrganizationMember.objects.filter(
-            user=request.user,
-            organization_id=org_id
-        ).exists()
-
-        if not is_member:
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
             return Response(
                 {"detail": "Access denied"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        projects = Project.objects.filter(organization_id=org_id)
+        projects = enforce_organization_isolation(Project.objects.all(), org_id).filter(organization_id=org_id)
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
