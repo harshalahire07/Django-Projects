@@ -13,6 +13,18 @@ class Organization(models.Model):
     def __str__(self):
         return self.name
 
+class Team(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="teams")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("name", "organization")
+
+    def __str__(self):
+        return f"{self.name} - {self.organization.name}"
+
 class OrganizationMember(models.Model):
     # ---------------------------------------------------------------------------
     # RBAC role hierarchy (higher integer = more authority)
@@ -32,6 +44,7 @@ class OrganizationMember(models.Model):
 
     user         = models.ForeignKey(User, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    team         = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="members", null=False)
     role         = models.IntegerField(choices=ROLE_CHOICES, default=MEMBER)
 
     joined_at = models.DateTimeField(auto_now_add=True)

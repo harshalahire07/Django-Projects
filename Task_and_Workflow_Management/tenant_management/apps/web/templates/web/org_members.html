@@ -61,7 +61,23 @@
   Audit Logs
 </a>
 {% endblock %} {% block topbar_actions %}
-<div id="admin-actions" style="display: none">
+<div id="admin-actions" style="display: none" class="flex gap-2">
+  <button
+    class="btn btn-secondary btn-sm"
+    onclick="openModal('create-team-modal')"
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+    Create Team
+  </button>
   <button class="btn btn-primary btn-sm" onclick="openModal('invite-modal')">
     <svg
       width="14"
@@ -107,6 +123,10 @@
         placeholder="colleague@company.com"
       />
     </div>
+    <div class="form-group">
+      <label for="invite-team">Assign to Team</label>
+      <select id="invite-team"></select>
+    </div>
     <div class="modal-actions">
       <button onclick="closeModal('invite-modal')" class="btn btn-secondary">
         Cancel
@@ -118,8 +138,36 @@
   </div>
 </div>
 
+<!-- Create Team Modal -->
+<div id="create-team-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Create New Team</div>
+      <button class="modal-close" onclick="closeModal('create-team-modal')">
+        &times;
+      </button>
+    </div>
+    <div class="form-group">
+      <label for="new-team-name">Team Name</label>
+      <input type="text" id="new-team-name" placeholder="e.g. Engineering" />
+    </div>
+    <div class="modal-actions">
+      <button
+        onclick="closeModal('create-team-modal')"
+        class="btn btn-secondary"
+      >
+        Cancel
+      </button>
+      <button onclick="createTeam()" class="btn btn-primary">
+        Create Team
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentOrgId;
+  let teams = [];
 
   document.addEventListener("DOMContentLoaded", async () => {
     const pathParts = window.location.pathname.split("/");
@@ -155,6 +203,7 @@
 
       const members = await response.json();
       const me = members.find((m) => m.id == currentUserId);
+      const isAdmin = me && me.role >= 4;
 
       // Role is now an integer: ADMIN=4, MANAGER=3, PROJECT_MANAGER=2, MEMBER=1
       const ROLE_LABELS = {
@@ -164,10 +213,25 @@
         1: "Member",
       };
 
-      if (me && me.role >= 4) {
+      if (isAdmin) {
         // 4 = ADMIN
-        document.getElementById("admin-actions").style.display = "block";
+        document.getElementById("admin-actions").style.display = "flex";
         document.getElementById("sidebar-audit").style.display = "flex";
+
+        // Fetch teams to populate select options
+        const teamsRes = await fetch(
+          `/api/organizations/${currentOrgId}/teams/`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        if (teamsRes.ok) {
+          teams = await teamsRes.json();
+          const teamSelect = document.getElementById("invite-team");
+          teamSelect.innerHTML = teams
+            .map((t) => `<option value="${t.id}">${t.name}</option>`)
+            .join("");
+        }
       }
 
       grid.innerHTML = members
@@ -181,9 +245,20 @@
               <div class="text-xs text-faint">Joined ${new Date(m.joined_at).toLocaleDateString()}</div>
             </div>
           </div>
-          <span class="badge ${m.role >= 4 ? "badge-primary" : "badge-neutral"}">
-            <span class="badge-dot"></span>${ROLE_LABELS[m.role] || m.role}
-          </span>
+          <div class="flex gap-2 items-center">
+            ${
+              isAdmin
+                ? `
+              <select onchange="assignTeam('${m.id}', this.value)" class="text-xs" style="padding: 2px 4px; border-radius: 4px; background: transparent; border: 1px solid var(--border-subtle);">
+                ${teams.map((t) => `<option value="${t.id}" ${m.team && m.team.id === t.id ? "selected" : ""}>${t.name}</option>`).join("")}
+              </select>
+            `
+                : `<span class="badge badge-neutral"><span class="badge-dot"></span>${m.team ? m.team.name : "No Team"}</span>`
+            }
+            <span class="badge ${m.role >= 4 ? "badge-primary" : "badge-neutral"}">
+              <span class="badge-dot"></span>${ROLE_LABELS[m.role] || m.role}
+            </span>
+          </div>
         </div>
       `,
         )
@@ -196,6 +271,7 @@
 
   async function inviteMember() {
     const email = document.getElementById("invite-email").value;
+    const teamId = document.getElementById("invite-team").value;
     if (!email) return showToast("Email is required", "warning");
 
     try {
@@ -207,7 +283,7 @@
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, role: 1 }), // 1 = MEMBER
+          body: JSON.stringify({ email, role: 1, team_id: teamId }), // 1 = MEMBER
         },
       );
 
@@ -221,6 +297,63 @@
       }
     } catch (e) {
       showToast("Error adding member", "error");
+    }
+  }
+
+  async function createTeam() {
+    const name = document.getElementById("new-team-name").value;
+    if (!name) return showToast("Team name is required", "warning");
+
+    try {
+      const response = await fetch(
+        `/api/organizations/${currentOrgId}/teams/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name }),
+        },
+      );
+
+      if (response.ok) {
+        showToast("Team created successfully!", "success");
+        closeModal("create-team-modal");
+        location.reload();
+      } else {
+        const data = await response.json();
+        showToast(data.detail || "Failed to create team", "error");
+      }
+    } catch (e) {
+      showToast("Error creating team", "error");
+    }
+  }
+
+  async function assignTeam(memberId, teamId) {
+    try {
+      const response = await fetch(
+        `/api/organizations/${currentOrgId}/members/${memberId}/assign_team/`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ team_id: teamId }),
+        },
+      );
+
+      if (response.ok) {
+        showToast("Team assigned successfully!", "success");
+      } else {
+        const data = await response.json();
+        showToast(data.detail || "Failed to assign team", "error");
+        location.reload(); // Revert selection on failure
+      }
+    } catch (e) {
+      showToast("Error assigning team", "error");
+      location.reload();
     }
   }
 </script>
