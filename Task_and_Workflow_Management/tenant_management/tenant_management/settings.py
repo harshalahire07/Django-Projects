@@ -93,6 +93,7 @@ REST_FRAMEWORK = {
         'anon': '30/minute',
         'user': '100/minute',
     },
+    'EXCEPTION_HANDLER': 'tenant_management.core.exception_handler.custom_exception_handler',
 }
 
 MIDDLEWARE = [

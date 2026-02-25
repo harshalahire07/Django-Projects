@@ -64,7 +64,7 @@ class OrganizationMembersAPIView(APIView):
 
         members = OrganizationMember.objects.filter(
             organization_id=org_id
-        ).select_related("user")
+        ).select_related("user", "team")
 
         data = [
             {
