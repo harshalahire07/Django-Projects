@@ -5,6 +5,7 @@ from .views import (
     UpdateTaskStatusAPIView,
     AssignTaskAPIView,
     TaskActivityListAPIView,
+    CompletedTaskDurationsAPIView,
 )
 
 urlpatterns = [
@@ -28,5 +29,8 @@ urlpatterns = [
     "<uuid:task_id>/activity/",
     TaskActivityListAPIView.as_view()
     ),
-
+    path(
+        "<uuid:org_id>/completed-durations/",
+        CompletedTaskDurationsAPIView.as_view()
+    ),
 ]

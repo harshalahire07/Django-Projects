@@ -109,9 +109,10 @@
   <table>
     <thead>
       <tr>
-        <th style="width: 40%; padding-left: 1.5rem">Task</th>
-        <th style="width: 20%">Assigned To</th>
-        <th style="width: 15%">Status</th>
+        <th style="width: 35%; padding-left: 1.5rem">Task</th>
+        <th style="width: 16%">Assigned To</th>
+        <th style="width: 12%">Status</th>
+        <th style="width: 12%">Duration</th>
         <th style="width: 25%; text-align: right; padding-right: 1.5rem">
           Actions
         </th>
@@ -119,7 +120,7 @@
     </thead>
     <tbody id="tasks-body">
       <tr>
-        <td colspan="4" style="padding: 0">
+        <td colspan="5" style="padding: 0">
           <div class="skeleton-table-row">
             <div class="skeleton skeleton-avatar"></div>
             <div
@@ -307,7 +308,7 @@
 
       if (tasks.length === 0) {
         tbody.innerHTML =
-          "<tr><td colspan='4' class='text-center' style='padding:3.5rem;'><div class='empty-icon' style='font-size:2rem;'>📋</div><div class='font-medium mt-2' style='color:var(--color-text-main);'>No tasks yet</div><div class='text-small text-muted mt-1'>Create a task to start tracking work.</div></td></tr>";
+          "<tr><td colspan='5' class='text-center' style='padding:3.5rem;'><div class='empty-icon' style='font-size:2rem;'>📋</div><div class='font-medium mt-2' style='color:var(--color-text-main);'>No tasks yet</div><div class='text-small text-muted mt-1'>Create a task to start tracking work.</div></td></tr>";
         return;
       }
 
@@ -359,6 +360,19 @@
                 "</span>"
               : "<span class='badge badge-neutral'><span class='badge-dot'></span>Unassigned</span>";
 
+          var durationHtml = "";
+          if (task.status === "DONE" && task.duration) {
+            durationHtml =
+              "<span class='badge badge-success' style='font-size:0.7rem;'><svg width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' style='margin-right:3px;'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>" +
+              task.duration +
+              "</span>";
+          } else if (task.assigned_at && !task.completed_at) {
+            durationHtml =
+              "<span class='text-xs text-muted'>In progress</span>";
+          } else {
+            durationHtml = "<span class='text-xs text-muted'>—</span>";
+          }
+
           return (
             "<tr><td style='padding-left:1.5rem;'><div class='font-medium' style='color:var(--color-text-main);'>" +
             task.title +
@@ -370,7 +384,9 @@
             getStatusBadgeClass(task.status) +
             "'><span class='badge-dot'></span>" +
             formatStatus(task.status) +
-            "</span></td><td style='padding-right:1.5rem;'>" +
+            "</span></td><td>" +
+            durationHtml +
+            "</td><td style='padding-right:1.5rem;'>" +
             actions +
             "</td></tr>"
           );
@@ -378,7 +394,7 @@
         .join("");
     } catch (error) {
       tbody.innerHTML =
-        "<tr><td colspan='4' class='alert-error text-center' style='padding:2rem;'>Error: " +
+        "<tr><td colspan='5' class='alert-error text-center' style='padding:2rem;'>Error: " +
         (error.detail || "Failed to load") +
         "</td></tr>";
     }

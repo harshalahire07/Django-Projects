@@ -171,6 +171,10 @@ class TeamListCreateAPIView(APIView):
         serializer = TeamSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
+        name = serializer.validated_data.get("name")
+        if Team.objects.filter(name=name, organization_id=org_id).exists():
+            return Response({"detail": "A team with this name already exists in the organization."}, status=400)
+            
         team = serializer.save(organization_id=org_id)
         
         AuditLog.objects.create(

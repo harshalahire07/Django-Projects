@@ -1,0 +1,47 @@
+[94m[INFO][0m Starting Registration & Login Tests...
+[92m[OK][0m Passed: Register admin_840641ed@test.com
+[92m[OK][0m Passed: Register member_9314eccd@test.com
+[92m[OK][0m Passed: Register member2_b668f681@test.com
+[92m[OK][0m Passed: Register malicious_8849e7fc@test.com
+[92m[OK][0m Passed: Login admin_840641ed@test.com
+[92m[OK][0m Passed: Login member_9314eccd@test.com
+[92m[OK][0m Passed: Login member2_b668f681@test.com
+[92m[OK][0m Passed: Login malicious_8849e7fc@test.com
+[92m[OK][0m Passed: Invalid Token check
+[94m[INFO][0m 
+Starting Organization Flow Tests...
+[92m[OK][0m Passed: Admin Create Org
+[92m[OK][0m Passed: Member Create Org
+[92m[OK][0m Passed: Member view unauthorized org
+[92m[OK][0m Passed: Admin adds member
+[92m[OK][0m Passed: Member requests escalation
+[94m[INFO][0m 
+Starting Team Flow Tests...
+[92m[OK][0m Passed: Admin Create Team
+[92m[OK][0m Passed: Member Create Team
+[92m[OK][0m Passed: Admin assigns team to member
+[94m[INFO][0m 
+Starting Project Flow Tests...
+[92m[OK][0m Passed: Admin Create Project
+[92m[OK][0m Passed: Member Create Project
+[94m[INFO][0m 
+Starting Task Flow Tests...
+[92m[OK][0m Passed: Admin Create Task
+[92m[OK][0m Passed: Member Create Task
+[92m[OK][0m Passed: Admin Assign Task
+[92m[OK][0m Passed: Member View Tasks
+[92m[OK][0m Passed: Member updates own task
+[92m[OK][0m Passed: Member updates others task
+[94m[INFO][0m 
+Verifying Audit Logs & URLs...
+[92m[OK][0m Passed: Admin views audit logs
+[92m[OK][0m Passed: Audit logs contain activity
+[92m[OK][0m Passed: Member views audit logs
+[92m[OK][0m Passed: Malicious user create cross-org
+[92m[OK][0m Passed: Malicious task patch
+[92m[OK][0m Passed: Duplicate team name
+[94m[INFO][0m 
+Stress Test Quick Check...
+[92m[OK][0m Created 50 tasks in 2.87 seconds
+[92m[OK][0m Passed: Load 50 tasks
+[92m[1m[SUCCESS][0m All Validation Passed Successfully!

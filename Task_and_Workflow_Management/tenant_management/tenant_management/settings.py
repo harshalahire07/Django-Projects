@@ -30,8 +30,31 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
+
+# ---------------------------------------------------------------------------
+# SECURITY HEADERS
+# ---------------------------------------------------------------------------
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+# ---------------------------------------------------------------------------
+# SESSION & COOKIE HARDENING
+# ---------------------------------------------------------------------------
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False   # Set True in production with HTTPS
+CSRF_COOKIE_SECURE = False      # Set True in production with HTTPS
+
+# ---------------------------------------------------------------------------
+# HSTS (Enable in production with HTTPS)
+# ---------------------------------------------------------------------------
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
 
 # Application definition
 
@@ -62,6 +85,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/minute',
+        'user': '100/minute',
+    },
 }
 
 MIDDLEWARE = [
@@ -72,6 +103,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tenant_management.middleware.request_logging.RequestLoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'tenant_management.urls'
@@ -154,3 +186,68 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 AUTH_USER_MODEL = "accounts.User"
+
+
+# ---------------------------------------------------------------------------
+# STRUCTURED LOGGING CONFIGURATION
+# ---------------------------------------------------------------------------
+
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    # ── Formatters ────────────────────────────────────────────────────────
+    "formatters": {
+        "structured": {
+            "format": "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+
+    # ── Handlers ──────────────────────────────────────────────────────────
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "structured",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(LOG_DIR / "app.log"),
+            "formatter": "structured",
+            "encoding": "utf-8",
+        },
+    },
+
+    # ── Loggers ───────────────────────────────────────────────────────────
+    "loggers": {
+        # Django's own request logger (4xx/5xx responses)
+        "django.request": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        # Django server lifecycle events
+        "django.server": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # Application-level loggers
+        "apps": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+
+    # ── Root logger (catch-all) ───────────────────────────────────────────
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "INFO",
+    },
+}

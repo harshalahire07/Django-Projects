@@ -1,0 +1,326 @@
+2026-02-25 16:43:09 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-02-25 16:44:52 | WARNING | django.request | Unauthorized: /api/organizations/mine/
+2026-02-25 16:44:52 | WARNING | django.server | "GET /api/organizations/mine/ HTTP/1.1" 401 58
+2026-02-25 16:44:53 | INFO | django.server | "POST /api/accounts/register/ HTTP/1.1" 201 42
+2026-02-25 16:44:54 | INFO | django.server | "POST /api/accounts/login/ HTTP/1.1" 200 491
+2026-02-25 16:44:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 2
+2026-02-25 16:44:54 | WARNING | django.request | Not Found: /api/nonexistent/
+2026-02-25 16:44:54 | WARNING | django.server | "GET /api/nonexistent/ HTTP/1.1" 404 5243
+2026-02-25 16:48:18 | INFO | django.utils.autoreload | C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\tenant_management\settings.py changed, reloading.
+2026-02-25 16:48:19 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-02-25 16:49:02 | WARNING | apps | user=None | method=GET | path=/api/organizations/mine/ | status=401 | duration=1ms
+2026-02-25 16:49:02 | WARNING | django.request | Unauthorized: /api/organizations/mine/
+2026-02-25 16:49:02 | WARNING | django.server | "GET /api/organizations/mine/ HTTP/1.1" 401 58
+2026-02-25 16:49:02 | INFO | apps | user=None | method=POST | path=/api/accounts/login/ | status=200 | duration=563ms
+2026-02-25 16:49:02 | INFO | django.server | "POST /api/accounts/login/ HTTP/1.1" 200 491
+2026-02-25 16:49:02 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 16:49:02 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 2
+2026-02-25 16:49:03 | INFO | apps | user=68 | method=POST | path=/api/organizations/create/ | status=201 | duration=53ms
+2026-02-25 16:49:03 | INFO | django.server | "POST /api/organizations/create/ HTTP/1.1" 201 65
+2026-02-25 16:49:03 | WARNING | apps | user=None | method=GET | path=/api/bad/endpoint/ | status=404 | duration=5ms
+2026-02-25 16:49:03 | WARNING | django.request | Not Found: /api/bad/endpoint/
+2026-02-25 16:49:03 | WARNING | django.server | "GET /api/bad/endpoint/ HTTP/1.1" 404 5246
+2026-02-25 16:54:38 | INFO | django.utils.autoreload | C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\tenant_management\settings.py changed, reloading.
+2026-02-25 16:54:39 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=1ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=1ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:41 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:41 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:41 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=405 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Method Not Allowed: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 405 40
+2026-02-25 16:57:42 | WARNING | apps | user=None | method=GET | path=/api/accounts/login/ | status=429 | duration=0ms
+2026-02-25 16:57:42 | WARNING | django.request | Too Many Requests: /api/accounts/login/
+2026-02-25 16:57:42 | WARNING | django.server | "GET /api/accounts/login/ HTTP/1.1" 429 69
+2026-02-25 17:00:49 | INFO | apps | user=None | method=POST | path=/api/accounts/login/ | status=200 | duration=552ms
+2026-02-25 17:00:49 | INFO | django.server | "POST /api/accounts/login/ HTTP/1.1" 200 491
+2026-02-25 17:00:49 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=41ms
+2026-02-25 17:00:49 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:49 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=42ms
+2026-02-25 17:00:49 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=139ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=39ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=38ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=41ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=53ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=53ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=47ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=45ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=44ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:50 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=38ms
+2026-02-25 17:00:50 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=152ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=38ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=139ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=145ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=39ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=34ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:51 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:51 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=144ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=34ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=149ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=151ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=148ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=39ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=134ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:52 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=140ms
+2026-02-25 17:00:52 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=34ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=39ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=34ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=150ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=141ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=39ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=141ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:53 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:53 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=137ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=139ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:54 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=138ms
+2026-02-25 17:00:54 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=138ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=38ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=41ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=35ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=36ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=138ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=151ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | INFO | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=200 | duration=37ms
+2026-02-25 17:00:55 | INFO | django.server | "GET /api/organizations/mine/ HTTP/1.1" 200 67
+2026-02-25 17:00:55 | WARNING | apps | user=68 | method=GET | path=/api/organizations/mine/ | status=429 | duration=32ms
+2026-02-25 17:00:55 | WARNING | django.request | Too Many Requests: /api/organizations/mine/
+2026-02-25 17:00:55 | WARNING | django.server | "GET /api/organizations/mine/ HTTP/1.1" 429 69
+2026-02-25 17:07:54 | INFO | django.utils.autoreload | C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\tenant_management\settings.py changed, reloading.
+2026-02-25 17:07:55 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-02-25 17:10:11 | INFO | apps | user=None | method=GET | path=/login/ | status=200 | duration=8ms
+2026-02-25 17:10:11 | INFO | django.server | "GET /login/ HTTP/1.1" 200 4748

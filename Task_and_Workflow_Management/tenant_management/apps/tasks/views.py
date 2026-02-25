@@ -219,3 +219,23 @@ class TaskActivityListAPIView(APIView):
         serializer = TaskActivitySerializer(activities, many=True)
 
         return Response(serializer.data, status=200)
+
+
+class CompletedTaskDurationsAPIView(APIView):
+    """
+    GET /api/tasks/<org_id>/completed-durations/
+    Returns all completed tasks in the organization with their computed durations.
+    Admin-only.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, org_id):
+        if not has_permission(request.user, org_id, OrganizationMember.ADMIN):
+            return Response({"detail": "Only admins can view durations"}, status=403)
+
+        tasks = enforce_organization_isolation(
+            Task.objects.filter(status=Task.STATUS_DONE), org_id
+        ).select_related("project")
+
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
