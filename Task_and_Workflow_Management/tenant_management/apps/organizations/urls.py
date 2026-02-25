@@ -6,6 +6,9 @@ from .views import (
     AddMemberAPIView,
     TeamListCreateAPIView,
     AssignTeamAPIView,
+    PermissionRequestListCreateAPIView,
+    PermissionRequestApproveAPIView,
+    PermissionRequestRejectAPIView,
 )
 
 urlpatterns = [
@@ -15,4 +18,8 @@ urlpatterns = [
     path("<uuid:org_id>/add_member/", AddMemberAPIView.as_view()),
     path("<uuid:org_id>/teams/", TeamListCreateAPIView.as_view()),
     path("<uuid:org_id>/members/<uuid:member_uuid>/assign_team/", AssignTeamAPIView.as_view()),
+    # Permission escalation
+    path("<uuid:org_id>/permission-requests/", PermissionRequestListCreateAPIView.as_view()),
+    path("<uuid:org_id>/permission-requests/<uuid:request_id>/approve/", PermissionRequestApproveAPIView.as_view()),
+    path("<uuid:org_id>/permission-requests/<uuid:request_id>/reject/", PermissionRequestRejectAPIView.as_view()),
 ]

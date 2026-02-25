@@ -11,6 +11,10 @@ class AuditLog(models.Model):
         ("PROJECT_CREATED", "Project Created"),
         ("TASK_CREATED", "Task Created"),
         ("MEMBER_ADDED", "Member Added"),
+        ("PERM_ESCALATION_REQUESTED", "Permission Escalation Requested"),
+        ("PERM_ESCALATION_APPROVED", "Permission Escalation Approved"),
+        ("PERM_ESCALATION_REJECTED", "Permission Escalation Rejected"),
+        ("PERM_ESCALATION_EXPIRED", "Permission Escalation Expired"),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

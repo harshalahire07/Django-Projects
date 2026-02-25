@@ -93,6 +93,24 @@
     Invite Member
   </button>
 </div>
+<div id="member-actions" style="display: none" class="flex gap-2">
+  <button
+    class="btn btn-secondary btn-sm"
+    onclick="openModal('escalation-modal')"
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+    Request Elevation
+  </button>
+</div>
 {% endblock %} {% block content %}
 <div class="page-header">
   <div class="page-title-group">
@@ -104,6 +122,19 @@
 <div id="members-grid" class="grid grid-cols-auto">
   <div class="card skeleton skeleton-card" style="height: 80px"></div>
   <div class="card skeleton skeleton-card" style="height: 80px"></div>
+</div>
+
+<!-- Permission Escalation Requests Section -->
+<div style="margin-top: 2.5rem">
+  <div class="page-header">
+    <div class="page-title-group">
+      <h2 style="font-size: 1.25rem">Permission Escalation</h2>
+      <p>Time-bound role elevation requests</p>
+    </div>
+  </div>
+  <div id="perm-requests-container">
+    <div class="card skeleton skeleton-card" style="height: 60px"></div>
+  </div>
 </div>
 
 <!-- Invite Modal -->
@@ -165,9 +196,65 @@
   </div>
 </div>
 
+<!-- Request Elevation Modal -->
+<div id="escalation-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Request Permission Elevation</div>
+      <button class="modal-close" onclick="closeModal('escalation-modal')">
+        &times;
+      </button>
+    </div>
+    <div class="form-group">
+      <label for="esc-role">Requested Role</label>
+      <select id="esc-role">
+        <option value="2">Project Manager</option>
+        <option value="3">Manager</option>
+        <option value="4">Admin</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="esc-reason">Reason</label>
+      <input
+        type="text"
+        id="esc-reason"
+        placeholder="Why do you need this access?"
+      />
+    </div>
+    <div class="form-group">
+      <label for="esc-start">Start Time</label>
+      <input type="datetime-local" id="esc-start" />
+    </div>
+    <div class="form-group">
+      <label for="esc-end">End Time</label>
+      <input type="datetime-local" id="esc-end" />
+    </div>
+    <div class="modal-actions">
+      <button
+        onclick="closeModal('escalation-modal')"
+        class="btn btn-secondary"
+      >
+        Cancel
+      </button>
+      <button onclick="submitEscalation()" class="btn btn-primary">
+        Submit Request
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentOrgId;
   let teams = [];
+  let currentUserRole = 0;
+  let isAdmin = false;
+
+  var ROLE_LABELS = {
+    4: "Admin",
+    3: "Manager",
+    2: "Project Manager",
+    1: "Member",
+  };
 
   document.addEventListener("DOMContentLoaded", async () => {
     const pathParts = window.location.pathname.split("/");
@@ -187,6 +274,12 @@
     const payload = JSON.parse(atob(token.split(".")[1]));
     const currentUserId = payload.user_id;
 
+    // Set default times for escalation modal
+    var now = new Date();
+    var later = new Date(now.getTime() + 60 * 60 * 1000); // +1 hour
+    document.getElementById("esc-start").value = toLocalISOString(now);
+    document.getElementById("esc-end").value = toLocalISOString(later);
+
     try {
       const response = await fetch(
         `/api/organizations/${currentOrgId}/members/`,
@@ -203,22 +296,13 @@
 
       const members = await response.json();
       const me = members.find((m) => m.id == currentUserId);
-      const isAdmin = me && me.role >= 4;
-
-      // Role is now an integer: ADMIN=4, MANAGER=3, PROJECT_MANAGER=2, MEMBER=1
-      const ROLE_LABELS = {
-        4: "Admin",
-        3: "Manager",
-        2: "Project Manager",
-        1: "Member",
-      };
+      currentUserRole = me ? me.role : 0;
+      isAdmin = me && me.role >= 4;
 
       if (isAdmin) {
-        // 4 = ADMIN
         document.getElementById("admin-actions").style.display = "flex";
         document.getElementById("sidebar-audit").style.display = "flex";
 
-        // Fetch teams to populate select options
         const teamsRes = await fetch(
           `/api/organizations/${currentOrgId}/teams/`,
           {
@@ -231,6 +315,18 @@
           teamSelect.innerHTML = teams
             .map((t) => `<option value="${t.id}">${t.name}</option>`)
             .join("");
+        }
+      } else {
+        // Non-admins see Request Elevation button
+        document.getElementById("member-actions").style.display = "flex";
+      }
+
+      // Filter escalation role options: only show roles higher than current
+      var escSelect = document.getElementById("esc-role");
+      var opts = escSelect.querySelectorAll("option");
+      for (var i = 0; i < opts.length; i++) {
+        if (parseInt(opts[i].value) <= currentUserRole) {
+          opts[i].style.display = "none";
         }
       }
 
@@ -267,7 +363,203 @@
       grid.innerHTML =
         '<div class="alert alert-error">Failed to load members</div>';
     }
+
+    // Load permission requests
+    await loadPermissionRequests();
   });
+
+  function toLocalISOString(dt) {
+    var y = dt.getFullYear();
+    var mo = String(dt.getMonth() + 1).padStart(2, "0");
+    var d = String(dt.getDate()).padStart(2, "0");
+    var h = String(dt.getHours()).padStart(2, "0");
+    var mi = String(dt.getMinutes()).padStart(2, "0");
+    return y + "-" + mo + "-" + d + "T" + h + ":" + mi;
+  }
+
+  function getStatusBadge(status) {
+    if (status === "PENDING") return "badge-warning";
+    if (status === "APPROVED") return "badge-success";
+    if (status === "REJECTED") return "badge-todo";
+    if (status === "EXPIRED") return "badge-neutral";
+    return "badge-neutral";
+  }
+
+  async function loadPermissionRequests() {
+    var container = document.getElementById("perm-requests-container");
+    try {
+      var res = await fetch(
+        `/api/organizations/${currentOrgId}/permission-requests/`,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+          },
+        },
+      );
+      if (!res.ok) throw await res.json();
+      var requests = await res.json();
+
+      if (requests.length === 0) {
+        container.innerHTML =
+          '<div class="card text-center" style="padding: 2rem;"><div class="text-muted">No permission escalation requests.</div></div>';
+        return;
+      }
+
+      container.innerHTML =
+        '<div class="table-container"><table><thead><tr>' +
+        '<th style="padding-left:1.5rem;">Requester</th>' +
+        "<th>Requested Role</th>" +
+        "<th>Time Window</th>" +
+        "<th>Reason</th>" +
+        "<th>Status</th>" +
+        '<th style="text-align:right;padding-right:1.5rem;">Actions</th>' +
+        "</tr></thead><tbody>" +
+        requests
+          .map(function (r) {
+            var actions = "";
+            if (r.status === "PENDING" && isAdmin) {
+              actions =
+                '<button class="btn btn-sm btn-primary" onclick="approveRequest(\'' +
+                r.id +
+                '\')" style="margin-right:0.25rem;">Approve</button>' +
+                '<button class="btn btn-sm btn-secondary" onclick="rejectRequest(\'' +
+                r.id +
+                "')\">&times; Reject</button>";
+            } else if (r.status === "APPROVED" && r.is_currently_active) {
+              actions =
+                '<span class="badge badge-success"><span class="badge-dot"></span>Active Now</span>';
+            } else {
+              actions =
+                '<span class="text-xs text-muted">' +
+                (r.approved_by_email ? "By: " + r.approved_by_email : "—") +
+                "</span>";
+            }
+
+            var startStr = new Date(r.start_time).toLocaleString();
+            var endStr = new Date(r.end_time).toLocaleString();
+
+            return (
+              "<tr>" +
+              '<td style="padding-left:1.5rem;"><div class="flex items-center gap-2"><div class="avatar-circle avatar-sm">' +
+              (r.requester_email || "U")[0].toUpperCase() +
+              '</div><span class="text-small font-medium">' +
+              (r.requester_email || "Unknown") +
+              "</span></div></td>" +
+              '<td><span class="badge badge-neutral"><span class="badge-dot"></span>' +
+              (r.requested_role_label || r.requested_role) +
+              "</span></td>" +
+              '<td><span class="text-xs">' +
+              startStr +
+              '</span><br><span class="text-xs text-muted">to ' +
+              endStr +
+              "</span></td>" +
+              '<td class="text-small">' +
+              (r.requested_action || "—") +
+              "</td>" +
+              '<td><span class="badge ' +
+              getStatusBadge(r.status) +
+              '"><span class="badge-dot"></span>' +
+              r.status +
+              "</span></td>" +
+              '<td style="text-align:right;padding-right:1.5rem;">' +
+              actions +
+              "</td>" +
+              "</tr>"
+            );
+          })
+          .join("") +
+        "</tbody></table></div>";
+    } catch (e) {
+      container.innerHTML =
+        '<div class="alert alert-error">Failed to load permission requests.</div>';
+    }
+  }
+
+  async function submitEscalation() {
+    var role = parseInt(document.getElementById("esc-role").value);
+    var reason = document.getElementById("esc-reason").value;
+    var startVal = document.getElementById("esc-start").value;
+    var endVal = document.getElementById("esc-end").value;
+
+    if (!startVal || !endVal)
+      return showToast("Start and end times are required", "warning");
+
+    try {
+      var res = await fetch(
+        `/api/organizations/${currentOrgId}/permission-requests/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            requested_role: role,
+            requested_action: reason,
+            start_time: new Date(startVal).toISOString(),
+            end_time: new Date(endVal).toISOString(),
+          }),
+        },
+      );
+
+      if (res.ok) {
+        closeModal("escalation-modal");
+        showToast("Escalation request submitted!", "success");
+        await loadPermissionRequests();
+      } else {
+        var data = await res.json();
+        showToast(data.detail || JSON.stringify(data), "error");
+      }
+    } catch (e) {
+      showToast("Error submitting request", "error");
+    }
+  }
+
+  async function approveRequest(requestId) {
+    try {
+      var res = await fetch(
+        `/api/organizations/${currentOrgId}/permission-requests/${requestId}/approve/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+          },
+        },
+      );
+      if (res.ok) {
+        showToast("Request approved!", "success");
+        await loadPermissionRequests();
+      } else {
+        var data = await res.json();
+        showToast(data.detail || "Failed to approve", "error");
+      }
+    } catch (e) {
+      showToast("Error approving request", "error");
+    }
+  }
+
+  async function rejectRequest(requestId) {
+    try {
+      var res = await fetch(
+        `/api/organizations/${currentOrgId}/permission-requests/${requestId}/reject/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("access_token"),
+          },
+        },
+      );
+      if (res.ok) {
+        showToast("Request rejected.", "success");
+        await loadPermissionRequests();
+      } else {
+        var data = await res.json();
+        showToast(data.detail || "Failed to reject", "error");
+      }
+    } catch (e) {
+      showToast("Error rejecting request", "error");
+    }
+  }
 
   async function inviteMember() {
     const email = document.getElementById("invite-email").value;
@@ -283,7 +575,7 @@
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, role: 1, team_id: teamId }), // 1 = MEMBER
+          body: JSON.stringify({ email, role: 1, team_id: teamId }),
         },
       );
 
@@ -349,7 +641,7 @@
       } else {
         const data = await response.json();
         showToast(data.detail || "Failed to assign team", "error");
-        location.reload(); // Revert selection on failure
+        location.reload();
       }
     } catch (e) {
       showToast("Error assigning team", "error");

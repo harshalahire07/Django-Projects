@@ -2,10 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
-from .models import Organization, OrganizationMember, Team
-from .serializers import OrganizationSerializer, TeamSerializer
+from .models import Organization, OrganizationMember, Team, PermissionRequest
+from .serializers import (
+    OrganizationSerializer, TeamSerializer,
+    PermissionRequestSerializer, PermissionRequestCreateSerializer,
+)
 from apps.audit.models import AuditLog
-from apps.organizations.rbac_service import has_permission
+from apps.organizations.rbac_service import has_permission, get_user_role
 # Create your views here.
 class CreateOrganizationAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -203,3 +206,204 @@ class AssignTeamAPIView(APIView):
         member.save()
 
         return Response({"detail": "Team assigned successfully"}, status=200)
+
+
+class PermissionRequestListCreateAPIView(APIView):
+    """
+    GET  /api/organizations/<org_id>/permission-requests/
+         List all permission requests for this org (admins see all, others see own).
+    POST /api/organizations/<org_id>/permission-requests/
+         Create a new permission escalation request.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, org_id):
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
+            return Response({"detail": "Access denied"}, status=403)
+
+        user_role = get_user_role(request.user, org_id)
+
+        if user_role >= OrganizationMember.ADMIN or getattr(request.user, 'is_super_admin', False):
+            # Admins see all requests in the org
+            qs = PermissionRequest.objects.filter(organization_id=org_id)
+        else:
+            # Regular members see only their own requests
+            qs = PermissionRequest.objects.filter(
+                organization_id=org_id,
+                requester=request.user,
+            )
+
+        serializer = PermissionRequestSerializer(qs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, org_id):
+        # Must be a member of the organization
+        if not has_permission(request.user, org_id, OrganizationMember.MEMBER):
+            return Response({"detail": "Access denied"}, status=403)
+
+        serializer = PermissionRequestCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        # The requested role must be strictly higher than the user's current base role
+        try:
+            member = OrganizationMember.objects.get(
+                user=request.user, organization_id=org_id
+            )
+        except OrganizationMember.DoesNotExist:
+            return Response({"detail": "Not a member of this organization"}, status=403)
+
+        if data["requested_role"] <= member.role:
+            return Response(
+                {"detail": "Requested role must be higher than your current role."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # No duplicate pending requests for same org
+        if PermissionRequest.objects.filter(
+            requester=request.user,
+            organization_id=org_id,
+            status=PermissionRequest.STATUS_PENDING,
+        ).exists():
+            return Response(
+                {"detail": "You already have a pending escalation request for this organization."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        perm_request = PermissionRequest.objects.create(
+            requester=request.user,
+            organization_id=org_id,
+            requested_role=data["requested_role"],
+            target_scope=data.get("target_scope", "organization"),
+            requested_action=data.get("requested_action", ""),
+            start_time=data["start_time"],
+            end_time=data["end_time"],
+            status=PermissionRequest.STATUS_PENDING,
+        )
+
+        AuditLog.objects.create(
+            actor=request.user,
+            action="PERM_ESCALATION_REQUESTED",
+            description=(
+                f"{request.user.email} requested escalation to "
+                f"{perm_request.get_requested_role_label()} "
+                f"(until {perm_request.end_time.isoformat()})."
+            ),
+            organization_id=org_id,
+        )
+
+        return Response(
+            PermissionRequestSerializer(perm_request).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class PermissionRequestApproveAPIView(APIView):
+    """
+    POST /api/organizations/<org_id>/permission-requests/<request_id>/approve/
+    Approve a permission escalation request.
+    Approver must have a role strictly HIGHER than the requested role.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, org_id, request_id):
+        # Load the permission request – must belong to this org (cross-org blocking)
+        try:
+            perm_request = PermissionRequest.objects.get(
+                id=request_id,
+                organization_id=org_id,
+            )
+        except PermissionRequest.DoesNotExist:
+            return Response({"detail": "Permission request not found"}, status=404)
+
+        if perm_request.status != PermissionRequest.STATUS_PENDING:
+            return Response(
+                {"detail": f"Request is already {perm_request.status}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Cannot approve own request
+        if perm_request.requester == request.user:
+            return Response(
+                {"detail": "You cannot approve your own request."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Approver must have a role strictly higher than the requested role
+        approver_role = get_user_role(request.user, org_id)
+        if approver_role <= perm_request.requested_role:
+            return Response(
+                {"detail": "You must have a role higher than the requested role to approve."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        perm_request.status = PermissionRequest.STATUS_APPROVED
+        perm_request.approved_by = request.user
+        perm_request.save()
+
+        AuditLog.objects.create(
+            actor=request.user,
+            action="PERM_ESCALATION_APPROVED",
+            description=(
+                f"Approved escalation of {perm_request.requester.email} to "
+                f"{perm_request.get_requested_role_label()} "
+                f"(until {perm_request.end_time.isoformat()})."
+            ),
+            organization_id=org_id,
+        )
+
+        return Response(PermissionRequestSerializer(perm_request).data)
+
+
+class PermissionRequestRejectAPIView(APIView):
+    """
+    POST /api/organizations/<org_id>/permission-requests/<request_id>/reject/
+    Reject a permission escalation request.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, org_id, request_id):
+        try:
+            perm_request = PermissionRequest.objects.get(
+                id=request_id,
+                organization_id=org_id,
+            )
+        except PermissionRequest.DoesNotExist:
+            return Response({"detail": "Permission request not found"}, status=404)
+
+        if perm_request.status != PermissionRequest.STATUS_PENDING:
+            return Response(
+                {"detail": f"Request is already {perm_request.status}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Cannot reject own request
+        if perm_request.requester == request.user:
+            return Response(
+                {"detail": "You cannot reject your own request."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Rejector must have a role strictly higher than the requested role
+        rejector_role = get_user_role(request.user, org_id)
+        if rejector_role <= perm_request.requested_role:
+            return Response(
+                {"detail": "You must have a role higher than the requested role to reject."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        perm_request.status = PermissionRequest.STATUS_REJECTED
+        perm_request.approved_by = request.user  # track who handled it
+        perm_request.save()
+
+        AuditLog.objects.create(
+            actor=request.user,
+            action="PERM_ESCALATION_REJECTED",
+            description=(
+                f"Rejected escalation of {perm_request.requester.email} to "
+                f"{perm_request.get_requested_role_label()}."
+            ),
+            organization_id=org_id,
+        )
+
+        return Response(PermissionRequestSerializer(perm_request).data)
