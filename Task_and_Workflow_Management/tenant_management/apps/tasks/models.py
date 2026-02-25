@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from apps.projects.models import Project
 from apps.accounts.models import User
 import uuid
@@ -38,8 +39,36 @@ class Task(models.Model):
         default=STATUS_TODO
     )
 
+    assigned_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Auto-set assigned_at when a task gets assigned
+        if self.assigned_to_id:
+            if self.pk:
+                try:
+                    old = Task.objects.filter(pk=self.pk).values_list('assigned_to_id', flat=True).first()
+                except Exception:
+                    old = None
+                if old != self.assigned_to_id:
+                    self.assigned_at = timezone.now()
+            else:
+                # New task being created with an assignee
+                self.assigned_at = timezone.now()
+        else:
+            # Unassigned – clear the timestamp
+            self.assigned_at = None
+
+        # Auto-set completed_at when status becomes DONE
+        if self.status == self.STATUS_DONE and not self.completed_at:
+            self.completed_at = timezone.now()
+        elif self.status != self.STATUS_DONE:
+            self.completed_at = None
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} ({self.project.name})"

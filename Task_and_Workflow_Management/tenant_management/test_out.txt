@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\manage.py", line 22, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\manage.py", line 18, in main
+    execute_from_command_line(sys.argv)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\__init__.py", line 443, in execute_from_command_line
+    utility.execute()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\__init__.py", line 437, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\commands\test.py", line 24, in run_from_argv
+    super().run_from_argv(argv)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\base.py", line 420, in run_from_argv
+    self.execute(*args, **cmd_options)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\base.py", line 464, in execute
+    output = self.handle(*args, **options)
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\core\management\commands\test.py", line 63, in handle
+    failures = test_runner.run_tests(test_labels)
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\test\runner.py", line 1132, in run_tests
+    suite = self.build_suite(test_labels)
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\test\runner.py", line 988, in build_suite
+    tests = self.load_tests_for_label(label, discover_kwargs)
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\.venv\Lib\site-packages\django\test\runner.py", line 969, in load_tests_for_label
+    tests = self.test_loader.discover(start_dir=label, **kwargs)
+  File "C:\Users\hda00\AppData\Local\Programs\Python\Python313\Lib\unittest\loader.py", line 304, in discover
+    self._top_level_dir = self._get_directory_containing_module(top_part)
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\hda00\AppData\Local\Programs\Python\Python313\Lib\unittest\loader.py", line 316, in _get_directory_containing_module
+    full_path = os.path.abspath(module.__file__)
+  File "<frozen ntpath>", line 576, in abspath
+TypeError: _path_normpath: path should be string, bytes or os.PathLike, not NoneType

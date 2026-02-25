@@ -1,0 +1,27 @@
+Creating test database for alias 'default'...
+
+F.
+======================================================================
+FAIL: test_all_api_views_require_authentication (apps.organizations.test_architecture.ArchitectureGuardrailTests.test_all_api_views_require_authentication)
+Assert that every APIView subclass has IsAuthenticated in its permission_classes.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\hda00\Desktop\Projects\Django_Projects\Task_and_Workflow_Management\tenant_management\apps\organizations\test_architecture.py", line 43, in test_all_api_views_require_authentication
+    self.assertTrue(
+    ~~~~~~~~~~~~~~~^
+        found_auth,
+        ^^^^^^^^^^^
+        f"SECURITY FLAW: View '{name}' in app '{app_name}' is missing IsAuthenticated constraint in permission_classes!"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+AssertionError: False is not true : SECURITY FLAW: View 'TokenRefreshView' in app 'accounts' is missing IsAuthenticated constraint in permission_classes!
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.028s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
+
+Found 2 test(s).
+System check identified no issues (0 silenced).

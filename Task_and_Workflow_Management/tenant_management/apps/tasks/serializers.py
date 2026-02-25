@@ -11,8 +11,10 @@ class TaskSerializer(serializers.ModelSerializer):
             "description",
             "status",
             "assigned_to",
+            "assigned_at",
+            "completed_at",
         )
-        read_only_fields = ("status",)
+        read_only_fields = ("status", "assigned_at", "completed_at")
 
 class TaskAssignSerializer(serializers.Serializer):
     assigned_to = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())

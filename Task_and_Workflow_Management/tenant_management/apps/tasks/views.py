@@ -98,10 +98,12 @@ class AssignTaskAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 5) Assign (or reassign)
+            # 5) Assign (or reassign) + auto-set status to IN_PROGRESS
             previous_assignee = task.assigned_to
             task.assigned_to = assignee
-            task.save(update_fields=["assigned_to"])
+            if task.status == Task.STATUS_TODO:
+                task.status = Task.STATUS_IN_PROGRESS
+            task.save(update_fields=["assigned_to", "status", "assigned_at"])
             
             try:
                 TaskActivity.objects.create(
@@ -144,11 +146,18 @@ class UpdateTaskStatusAPIView(APIView):
     def patch(self, request, task_id):
         #  Load task
         try:
-            # First fetch the task to get its project's organization_id since it's not in the URL
-            task_probe = Task.objects.select_related("project").get(id=task_id)
+            # Secure fetch: only find tasks belonging to organizations where the user has membership
+            # or globally if they are super admin.
+            is_super_admin = getattr(request.user, 'is_super_admin', False)
+            if is_super_admin:
+                task_probe = Task.objects.select_related("project").get(id=task_id)
+            else:
+                user_orgs = OrganizationMember.objects.filter(user=request.user).values_list('organization_id', flat=True)
+                task_probe = Task.objects.select_related("project").filter(project__organization_id__in=user_orgs).get(id=task_id)
+                
             org_id = task_probe.project.organization_id
             
-            # Now fetch the task with strict isolation rules
+            # Now enforce specific role constraints (e.g. MEMBER only sees assigned to self)
             task = enforce_organization_isolation(Task.objects.all(), org_id, user=request.user).get(id=task_id)
         except Task.DoesNotExist:
             return Response({"detail": "Task not found or access denied"}, status=404)
@@ -170,7 +179,7 @@ class UpdateTaskStatusAPIView(APIView):
 
         # Update status
         task.status = new_status
-        task.save(update_fields=["status"])
+        task.save(update_fields=["status", "completed_at"])
         TaskActivity.objects.create(
             task=task,
             actor=request.user,
@@ -193,7 +202,13 @@ class TaskActivityListAPIView(APIView):
 
     def get(self, request, task_id):
         try:
-            task_probe = Task.objects.select_related("project").get(id=task_id)
+            is_super_admin = getattr(request.user, 'is_super_admin', False)
+            if is_super_admin:
+                task_probe = Task.objects.select_related("project").get(id=task_id)
+            else:
+                user_orgs = OrganizationMember.objects.filter(user=request.user).values_list('organization_id', flat=True)
+                task_probe = Task.objects.select_related("project").filter(project__organization_id__in=user_orgs).get(id=task_id)
+                
             org_id = task_probe.project.organization_id
 
             task = enforce_organization_isolation(Task.objects.all(), org_id, user=request.user).get(id=task_id)
