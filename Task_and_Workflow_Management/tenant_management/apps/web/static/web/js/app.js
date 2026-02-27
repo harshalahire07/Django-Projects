@@ -61,6 +61,7 @@ async function logout() {
 
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("user_email");
   window.location.href = "/login/";
 }
 
@@ -195,4 +196,20 @@ function closeSidebar() {
    ============================================================ */
 document.addEventListener("DOMContentLoaded", () => {
   initModals();
+
+  // Populate sidebar with logged-in user's email
+  const userEmail = localStorage.getItem("user_email");
+  const accountEl = document.getElementById("sidebar-account");
+  if (userEmail && accountEl) {
+    const emailEl = document.getElementById("sidebar-email");
+    const letterEl = document.getElementById("sidebar-avatar-letter");
+    if (emailEl) {
+      emailEl.textContent = userEmail;
+      emailEl.title = userEmail;
+    }
+    if (letterEl) {
+      letterEl.textContent = userEmail.charAt(0).toUpperCase();
+    }
+    accountEl.style.display = "flex";
+  }
 });

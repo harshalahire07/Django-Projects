@@ -1,5 +1,5 @@
-{% extends 'web/base.html' %} {% block title %}Login - Taskflow{% endblock %} {%
-block layout %}
+{% extends 'web/base.html' %} {% load static %} {% block title %}Login -
+Taskflow{% endblock %} {% block layout %}
 <!-- Auth layout: no sidebar -->
 <div class="auth-layout">
   <div class="auth-form-card">
@@ -83,7 +83,6 @@ block layout %}
 
 <!-- Toast container -->
 <div id="toast-container" class="toast-container"></div>
-{% load static %}
 <script src="{% static 'web/js/app.js' %}"></script>
 <script>
   document
